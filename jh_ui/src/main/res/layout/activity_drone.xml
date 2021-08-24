@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    tools:context="com.joyhonest.jh_drone.droneActivity">
+
+    <ImageView
+        android:id="@+id/DispImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@mipmap/jhd_filesbg_a"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Brow"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@mipmap/jhd_file_off"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_Video"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="30dp"
+        android:background="@mipmap/jhd_record_off"
+
+        app:layout_constraintRight_toLeftOf="@+id/btn_Brow"
+        app:layout_constraintTop_toTopOf="@+id/btn_Brow" />
+
+    <Button
+        android:id="@+id/btn_Photo"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="30dp"
+        android:background="@mipmap/jhd_snapshot_off"
+
+        app:layout_constraintRight_toLeftOf="@+id/btn_Video"
+        app:layout_constraintTop_toTopOf="@+id/btn_Video" />
+
+    <Button
+        android:id="@+id/btn_Wifi"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:background="@mipmap/jhd_wifi4"
+
+        app:layout_constraintLeft_toRightOf="@+id/btn_Brow"
+        app:layout_constraintTop_toTopOf="@+id/btn_Brow" />
+
+    <Button
+        android:id="@+id/btn_Back"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="30dp"
+        android:background="@mipmap/jhd_back_off"
+
+        app:layout_constraintLeft_toRightOf="@+id/btn_Wifi"
+        app:layout_constraintTop_toTopOf="@+id/btn_Wifi" />
+
+    <TextView
+        android:id="@+id/RectimeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:visibility="invisible"
+
+        android:textColor="#FFFF0000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.98" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
