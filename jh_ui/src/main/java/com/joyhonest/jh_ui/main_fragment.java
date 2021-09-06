@@ -763,13 +763,25 @@ public class main_fragment extends Fragment implements View.OnClickListener {
                 }
             }, 800);
 
+            if (nIsOldFlyControl == _720P_oldCtron) {
+//                But_KeyUp.setBackgroundResource(R.mipmap.takeoff_nor_jh);
+//                But_KeyDn.setBackgroundResource(R.mipmap.takeoff_a_jh);
+
+            } else {
+                But_KeyUp.setBackgroundResource(R.mipmap.takeoff_nor_jh);
+                But_KeyDn.setBackgroundResource(R.mipmap.landing_nor_jh);
+            }
+
         }
 
         if (view == But_KeyUp) {
+            bStop = false;
+            But_KeyStop.setBackgroundResource(R.mipmap.stop_nor_jh);
             if (nIsOldFlyControl == _720P_oldCtron) {
                 bUp = !bUp;
                 bDn = false;
-                But_KeyUp.setBackgroundResource(R.mipmap.takeoff_sel_jh);
+//                But_KeyDn.setBackgroundResource(R.mipmap.takeoff_a_jh);
+//                But_KeyUp.setBackgroundResource(R.mipmap.takeoff_sel_jh);
                 delayHandler.removeCallbacksAndMessages(null);
                 delayHandler.postDelayed(new Runnable() {
                     @Override
@@ -780,6 +792,7 @@ public class main_fragment extends Fragment implements View.OnClickListener {
             } else {
                 bUp = true;
                 bDn = false;
+                But_KeyDn.setBackgroundResource(R.mipmap.landing_nor_jh);
                 But_KeyUp.setBackgroundResource(R.mipmap.takeoff_sel_jh);
                 delayHandler.removeCallbacksAndMessages(null);
                 delayHandler.postDelayed(new Runnable() {
@@ -793,10 +806,12 @@ public class main_fragment extends Fragment implements View.OnClickListener {
             }
         }
         if (view == But_KeyDn) {
+            bStop = false;
+            But_KeyStop.setBackgroundResource(R.mipmap.stop_nor_jh);
             if (nIsOldFlyControl == _720P_oldCtron) {
                 bUp = !bUp;
                 bDn = false;
-                But_KeyDn.setBackgroundResource(R.mipmap.takeoff_a_sel_jh);
+                //But_KeyDn.setBackgroundResource(R.mipmap.takeoff_a_sel_jh);
                 delayHandler.removeCallbacksAndMessages(null);
                 delayHandler.postDelayed(new Runnable() {
                     @Override
@@ -807,6 +822,7 @@ public class main_fragment extends Fragment implements View.OnClickListener {
             } else {
                 bUp = false;
                 bDn = true;
+                But_KeyUp.setBackgroundResource(R.mipmap.takeoff_nor_jh);
                 But_KeyDn.setBackgroundResource(R.mipmap.landing_sel_jh);
                 delayHandler.removeCallbacksAndMessages(null);
                 delayHandler.postDelayed(new Runnable() {
@@ -968,20 +984,12 @@ public class main_fragment extends Fragment implements View.OnClickListener {
 
 
             Menu_View.setVisibility(View.VISIBLE);
-//            mConstraintSet2.clear(R.id.Menu_View);
-//            mConstraintSet2.connect(R.id.Menu_View, ConstraintSet.LEFT, R.id.constraint_layout, ConstraintSet.LEFT, 0);
-//            mConstraintSet2.connect(R.id.Menu_View, ConstraintSet.RIGHT, R.id.constraint_layout, ConstraintSet.RIGHT, 0);
-//            mConstraintSet2.constrainHeight(R.id.Menu_View, 40);
-//            mConstraintSet2.connect(R.id.Menu_View, ConstraintSet.TOP, R.id.constraint_layout, ConstraintSet.BOTTOM, 0);
-//            mConstraintSet2.applyTo(constraintLayout);
 
             But_Show_Hide.setBackgroundResource(R.mipmap.menu_nor_jh);
             But_Floder.setBackgroundResource(R.mipmap.folder_nor_jh);
             But_BrowSD.setVisibility(View.INVISIBLE);
             But_BrowPhone.setVisibility(View.INVISIBLE);
         } else {
-            //TransitionManager.beginDelayedTransition(constraintLayout,autoTransition);
-            //mConstraintSet1.applyTo(constraintLayout);
             Menu_View.setVisibility(View.GONE);
             But_Show_Hide.setBackgroundResource(R.mipmap.menu_sel_jh);
         }
