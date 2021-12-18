@@ -112,29 +112,9 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
 
         StopFly_Btn.setOnClickListener(this);
 
-
         bPhoto = true;
-
-        //  Location_TxtView.setTextColor(0xFFFF0000);
-
-
         myControl.F_DispPahtView(true);
-
-
         myControl.F_SetDispText(false);
-
-        /*
-        else {
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) return_btn.getLayoutParams();
-            params.width = Storage.dip2px(getActivity(), 30);
-            params.height = Storage.dip2px(getActivity(), 30);
-            params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            return_btn.setLayoutParams(params);
-            return_btn.setBackgroundResource(R.mipmap.return_icon_black_fly_jh);
-            myControl.F_SetDispText(false);
-        }
-        */
         F_DispPhoto_Record();
         return view;
     }
@@ -181,7 +161,6 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
                 public void run() {
                     JH_App.bStop = false;
                     {
-                        //  StopFly_Btn.setBackgroundResource(R.mipmap.stop_nor_fly_jh_b);
                         StopFly_Btn.setBackgroundResource(R.mipmap.stop_nor_fly_jh);
                     }
 
@@ -192,7 +171,6 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
             if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0)
                 return;
             if (bPhoto) {
-
                 if ((JH_App.nSdStatus & JH_App.SD_SNAP) != 0)     //SD 拍照还没有完成。就不进行此次拍照
                     return;
 
@@ -210,13 +188,13 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
                     else if(JH_App.nResolution==1)
                     {
                         wifination.naSetRecordWH(1280,720);
-
                     }
                     else
                     {
                         wifination.naSetRecordWH(-1,-1);
                     }
                 }
+
 
                 wifination.naSnapPhoto(str, wifination.TYPE_BOTH_PHONE_SD);
                 Handler handler = new Handler();

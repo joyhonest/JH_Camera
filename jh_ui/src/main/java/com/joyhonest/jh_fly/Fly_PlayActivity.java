@@ -60,6 +60,7 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -149,33 +150,51 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
         wifination.naSetRecordAudio(JH_App.bRecordVoice);
-        //wifination.naSetGesture(true,this.getApplicationContext());
-        //wifination.naSetGPFps(17);
         wifination.naSetVrBackground(true);
         JH_App.bFlyDisableAll = true;
         JH_App.nType = JH_App.nStyle_fly;
         JH_App.F_InitMusic();
         wifination.naSetRevBmp(true);
         JH_App.nResolution = 0;
+        F_Init();
 
+        if(JH_App.isAndroidQ())
+        {
+            JH_App.F_CreateLocalFlyDefalutDir();
+        }
 
-
-        //String str = wifination.naGetControlType();
         mAsker = new PermissionAsker(10, new Runnable() {
-            @Override
-            public void run() {
-                setContentView(R.layout.activity_fly_play_jh);
-                F_Init();
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                F_DispAlert();
+                @Override
+                public void run() {
+                    JH_App.F_CreateLocalFlyDefalutDir();
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    F_DispAlert();
+                }
+            }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO);
 
+        DispImageView.post(new Runnable() {
+            @Override
+            public void run() {
+                FragmentTransaction transactionA = mFragmentMan.beginTransaction();
+                hideFragments(transactionA);
+                transactionA.commit();
+                dispVideo_fragment.F_SetBackImg(R.mipmap.return_icon_black_fly_jh);
+                F_SetView(flyPlayFragment);
             }
-        }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO);
+        });
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
     }
+
+
 
     private void F_DispAlert() {
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -199,7 +218,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "GetDataFromWifi") //通过20000端口 返回的，SDK内部没有处理的数据
     private  void GetDataFromWifi(byte []cmd) {
         if (cmd != null && cmd.length >= 3) {
-            if (cmd[0] == 0x40 && cmd[1] == 0x01) {
+            if (cmd[0] == 0x40 && cmd[1] == 0x01)
+            {
                 JH_App.nResolution = cmd[2];
             }
         }
@@ -221,20 +241,9 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     private void F_Init() {
         JH_App.bFlying = false;
-
-        //text_number_View = (TextView)findViewById(R.id.text_number_View);
-        //text_number_View.setVisibility(View.INVISIBLE);
-
+        setContentView(R.layout.activity_fly_play_jh);
         DispImageView = findViewById(R.id.DispImageView);
-        //DispImageView.setVisibility(View.INVISIBLE);
         wifination.naSetRevBmp(true);
-
-        //glSurfaceView = (JH_GLSurfaceView) findViewById(R.id.glSurfaceView);
-        //glSurfaceView.setVisibility(View.INVISIBLE);
-
-        //imageView4 = (ImageView)findViewById(R.id.imageView4);
-        //wifination.naSetRevBmp(true);
-
         MyControl.bFlyType = true;
 
         wifination.F_AdjBackGround(this, R.mipmap.loginbackground_fly_jh);//R.mipmap.loginbackground_jh)
@@ -260,12 +269,10 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                     }
                 }
                 RssiHander.postDelayed(this, 1000);
-
             }
         };
-
         RssiHander.postDelayed(RssiRunable, 100);
-        JH_App.F_CreateLocalFlyDefalutDir();
+        //JH_App.F_CreateLocalFlyDefalutDir();
         F_InitFragment();
         EventBus.getDefault().register(this);
     }
@@ -273,10 +280,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "HideSurfaceView")
     private void HideSurfaceView(boolean bHide) {
         if (bHide) {
-            //glSurfaceView.setVisibility(View.INVISIBLE);
             DispImageView.setVisibility(View.INVISIBLE);
         } else {
-            //glSurfaceView.setVisibility(View.VISIBLE);
             DispImageView.setVisibility(View.VISIBLE);
         }
     }
@@ -285,7 +290,6 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag ="ReviceBMP")
     private void ReviceBMP(Bitmap bmp)
     {
-        //imageView4.setImageBitmap(bmp);
         DispImageView.setImageBitmap(bmp);
     }
 
@@ -299,35 +303,12 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     @Subscriber(tag = "SavePhotoOK")
     private void SavePhotoOK(String Sn) {
-/*
-        if (Sn.length() < 5) {
-            return;
-        }
-        String sType = Sn.substring(0, 2);
-        String sName = Sn.substring(2, Sn.length());
-        int nPhoto = Integer.parseInt(sType);
-        if (nPhoto == 0) {
-           // JH_App.F_Save2ToGallery(sName, true);
-            if(mActiveFragment == flyPathFragment)
-            {
-                flyPathFragment.F_DispMessage("snapshot");
-            }
-            if(mActiveFragment == flyPlayFragment) {
-                flyPlayFragment.F_DispMessage("snapshot");
-            }
-        } else {
-            ;
-            //JH_App.F_Save2ToGallery(sName, false);
-        }
-*/
+
     }
 
 
     @Subscriber(tag = "GPS_LocationChanged")
     private void GPS_LocationChanged(Location location) {
-        // TextView tv1;
-        // tv1 = (TextView) this.findViewById(R.id.gps);
-
         if (location != null) {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
@@ -336,7 +317,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
             } else {
                 JH_App.nCheckt++;
-                str = String.format(" 纬度：%f  经度 %f 次数 %d", latitude, longitude, JH_App.nCheckt);
+                str = String.format(Locale.ENGLISH,"纬度：%f  经度 %f 次数 %d", latitude, longitude, JH_App.nCheckt);
             }
 
             if (flyPlayFragment != null)
@@ -660,7 +641,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    boolean bFirst = false;
+
 
     private void F_InitFragment() {
         flyPlayFragment = new FlyPlayFragment();
@@ -682,21 +663,10 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
         mFragmentMan.executePendingTransactions();
         F_OpenCamera(true);
-        bFirst = true;
+
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (bFirst) {
-            bFirst = false;
-            FragmentTransaction transactionA = mFragmentMan.beginTransaction();
-            hideFragments(transactionA);
-            transactionA.commit();
-            dispVideo_fragment.F_SetBackImg(R.mipmap.return_icon_black_fly_jh);
-            F_SetView(flyPlayFragment);
-        }
-    }
+
 
     @Subscriber(tag = "SDStatus_Changed")
     private void _SDStatus_Changed(Integer nStatus) {

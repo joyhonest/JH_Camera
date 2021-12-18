@@ -401,7 +401,6 @@ public class JH_App {
 
             if(Environment.isExternalStorageLegacy()) {
                 String StroragePath = "";
-
                 try {
                     StroragePath = Storage.getNormalSDCardPath();
                 } catch (Exception e) {
