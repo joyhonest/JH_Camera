@@ -225,16 +225,16 @@ public class BrowFilesFragment extends Fragment implements View.OnClickListener,
             }
         }
 
-        if (v == button_trash_2) {
-            F_TranSelect2System();
-            JH_App.F_DispMesate("Download Finished!");
-        }
+//        if (v == button_trash_2) {
+//            F_TranSelect2System();
+//            JH_App.F_DispMesate("Download Finished!");
+//        }
 
         if (v == button_yes) {
-            if (JH_App.bDownLoading) {
-                JH_App.F_DispMesate("正在下载，请稍候");
-                return;
-            }
+//            if (JH_App.bDownLoading) {
+//                JH_App.F_DispMesate("正在下载，请稍候");
+//                return;
+//            }
             EventBus.getDefault().post("", "Grid_Delete");
             AlartView.setVisibility(View.INVISIBLE);
         }

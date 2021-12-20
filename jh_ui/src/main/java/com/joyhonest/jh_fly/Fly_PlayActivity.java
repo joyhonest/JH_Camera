@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 
 import android.location.Location;
 
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -303,7 +304,17 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     @Subscriber(tag = "SavePhotoOK")
     private void SavePhotoOK(String Sn) {
-
+        if (Sn.length() < 5) {
+            return;
+        }
+        String sType = Sn.substring(0, 2);
+        String sName = Sn.substring(2, Sn.length());
+        int nPhoto = Integer.parseInt(sType);
+        if (nPhoto == 0) {
+            JH_App.F_Save2ToGallery(sName, true);
+        } else {
+            JH_App.F_Save2ToGallery(sName, false);
+        }
     }
 
 
@@ -929,14 +940,30 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             thread_getFileNumber.start();
         } else {
             File f = new File(JH_App.sLocalPhoto);
-            File[] files = f.listFiles();// 列出所有文件
+            File[] files = f.listFiles();   //列出所有文件
             String fileName;
             for (File file : files) {
                 if (file.exists() && !file.isDirectory()) {
                     fileName = file.getAbsolutePath();
+
+                    String sVedor = file.getParent();
+                    sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
+                    String slocal = "";
                     String fileName1 = fileName.toLowerCase();
                     if (fileName1.endsWith(".jpg") || fileName1.endsWith(".png")) {
-                        JH_App.mLocal_PhotosList.add(fileName);
+                        if(JH_App.isAndroidQ()) {
+                            slocal = Environment.DIRECTORY_PICTURES + File.separator + sVedor;
+                            String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
+                            if (JH_App.F_CheckIsExit(slocal, sfile, true)) {
+                                JH_App.mLocal_PhotosList.add(fileName);
+                            } else {
+                                file.delete();
+                            }
+                        }
+                        else
+                        {
+                            JH_App.mLocal_PhotosList.add(fileName);
+                        }
                     }
                 }
             }
@@ -949,15 +976,31 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                 if (file.exists() && !file.isDirectory()) {
                     fileName = file.getAbsolutePath();
                     String fileName1 = fileName.toLowerCase();
+
+                    String sVedor = file.getParent();
+                    sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
+
                     if (fileName1.endsWith(".mp4")) {
-                        JH_App.mLocal_VideosList.add(fileName);
+
+                        if(JH_App.isAndroidQ()) {
+                            String slocal = Environment.DIRECTORY_MOVIES + File.separator + sVedor;
+                            String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
+                            if (JH_App.F_CheckIsExit(slocal, sfile, false)) {
+                                JH_App.mLocal_VideosList.add(fileName);
+                            } else {
+                                file.delete();
+                            }
+                        }
+                        else
+                        {
+                            JH_App.mLocal_VideosList.add(fileName);
+                        }
                     } else {
                         file.delete();
                     }
                 }
             }
             Collections.sort(JH_App.mLocal_VideosList, new SortComparator());
-            //Select_Video_Photo_Fragment.F_Update_number(JH_App.mLocal_PhotosList.size(), JH_App.mLocal_VideosList.size());
         }
     }
 
@@ -1533,11 +1576,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     @Subscriber(tag = "Grid_Delete")
     private void Grid_Delete(String str) {
-
         MyThread_Delete delete = new MyThread_Delete(this);
         delete.start();
-
-
     }
 
 
@@ -1565,7 +1605,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
             for (MyItemData data : JH_App.mGridList) {
                 if (data.bSelected) {
-                    if (JH_App.bBrowSD) {
+                    if (JH_App.bBrowSD)
+                    {
                         wifination.naDeleteSDFile(data.sSDPath);
                         File file = new File(data.sPhonePath);
                         if (file.isFile() && file.exists()) {
@@ -1577,8 +1618,6 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                         } catch (InterruptedException e) {
 
                         }
-
-
                     } else {
                         JH_App.DeleteImage(data.sPhonePath);
                     }

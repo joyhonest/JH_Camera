@@ -734,7 +734,7 @@ public class JH_App {
     //把图片或者视频添加到系统图库
 
 
-    private  static  boolean F_CheckIsExit(String slocal,String sfile,boolean bPhoto)
+    public   static  boolean F_CheckIsExit(String slocal,String sfile,boolean bPhoto)
     {
         if (mContext == null)
             return false;
@@ -843,32 +843,28 @@ public class JH_App {
                         e.printStackTrace();
                     }
 
-//                File file = new File(filename);
-//                if (file.isFile() && file.exists())
-//                {
-//                    file.delete();
-//                }
+//                    File file = new File(filename);
+//                    if (file.isFile() && file.exists())
+//                    {
+//                        file.delete();
+//                    }
 
                 }
             }
             else
             {
                 try {
-                    //ContentResolver contentResolver = mContext.getContentResolver();
-                    //final ContentValues values = new ContentValues();
                     if (bPhoto) {
                         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
                         values.put(MediaStore.Images.Media.DATA, filename);
-                        //Uri uri =
                         contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                     } else {
                         values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
                         values.put(MediaStore.Video.Media.DATA, filename);
-                        //Uri uri =
                         contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
                     }
-                    Uri uri1 = Uri.parse("file://" + filename);
-                    mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri1));
+//                    Uri uri1 = Uri.parse("file://" + filename);
+//                    mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri1));
                 } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -878,8 +874,9 @@ public class JH_App {
 
 
     public static void DeleteImage(String imgPath) {
-        if (mContext == null)
+        if (mContext == null) {
             return;
+        }
             String stype = imgPath.substring(imgPath.lastIndexOf(".") + 1);
             Cursor cursor;
             ContentResolver resolver = mContext.getContentResolver();
@@ -929,14 +926,8 @@ public class JH_App {
                 boolean result = false;
                 if (cursor != null) {
                     try {
-                        while (cursor.moveToFirst()) {
+                        if (cursor.moveToFirst()) {
                             long id = cursor.getLong(0);
-                            //Uri contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-//                        String[] columnNames = cursor.getColumnNames();
-//                        for (String columnName : columnNames) {
-//                            String s = cursor.getString(cursor.getColumnIndex(columnName));
-//                            Log.e("TAG",s);
-//                        }
                             Uri uri = ContentUris.withAppendedId(contentUri, id);
                             int count = resolver.delete(uri, null, null);
                             result = count == 1;
@@ -974,7 +965,7 @@ public class JH_App {
 
                 if (cursor != null) {
                     try {
-                        while (cursor.moveToFirst())
+                        if (cursor.moveToFirst())
                         {
                             long id = cursor.getLong(0);
                             Uri uri = ContentUris.withAppendedId(contentUri, id);
@@ -1158,6 +1149,8 @@ public class JH_App {
         }
         return nICType;
     }
+
+
 
     // public static JH_App getInstance() {
     //    return singleton;

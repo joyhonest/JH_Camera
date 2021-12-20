@@ -60,7 +60,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_toStartOf="@+id/button_trash"
                     android:background="@mipmap/tra_icon_fly_jh"
-                    android:visibility="visible"/>
+                    android:visibility="invisible" />
 
                 <Button
                     android:id="@+id/button_trash"
