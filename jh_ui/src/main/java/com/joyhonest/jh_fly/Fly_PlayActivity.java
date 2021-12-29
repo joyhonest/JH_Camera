@@ -148,6 +148,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JH_App.bSymaFly = true;
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
         wifination.naSetRecordAudio(JH_App.bRecordVoice);
@@ -945,12 +946,12 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             for (File file : files) {
                 if (file.exists() && !file.isDirectory()) {
                     fileName = file.getAbsolutePath();
-
                     String sVedor = file.getParent();
                     sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
                     String slocal = "";
                     String fileName1 = fileName.toLowerCase();
                     if (fileName1.endsWith(".jpg") || fileName1.endsWith(".png")) {
+                        sVedor ="SYMA fly_P";
                         if(JH_App.isAndroidQ()) {
                             slocal = Environment.DIRECTORY_PICTURES + File.separator + sVedor;
                             String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
@@ -983,6 +984,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                     if (fileName1.endsWith(".mp4")) {
 
                         if(JH_App.isAndroidQ()) {
+                            sVedor ="SYMA fly_V";
                             String slocal = Environment.DIRECTORY_MOVIES + File.separator + sVedor;
                             String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
                             if (JH_App.F_CheckIsExit(slocal, sfile, false)) {

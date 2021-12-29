@@ -37,7 +37,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
 
     implementation project(':jh_ui')
-    //implementation 'com.github.joyhonest:JH_Camera:1.02'
+    //implementation 'com.github.joyhonest:JH_Camera:1.04'
 
 
    //implementation 'com.Joyhonest:JH_Camera:1.4.8'

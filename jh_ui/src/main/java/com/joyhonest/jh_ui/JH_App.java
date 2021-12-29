@@ -307,8 +307,8 @@ public class JH_App {
                 F_CheckAndroid10();
 
             }
-            sLocalPhoto = F_CreateAndroid29_dir("DRONE FPV_P");
-            sLocalVideo = F_CreateAndroid29_dir("DRONE FPV_V");
+            sLocalPhoto = F_CreateAndroid10_dir("DRONE FPV_P");
+            sLocalVideo = F_CreateAndroid10_dir("DRONE FPV_V");
         } else {
             String StroragePath = "";
 
@@ -341,8 +341,8 @@ public class JH_App {
         if (mContext == null)
             return;
         if (isAndroidQ()) {
-            sLocalPhoto = F_CreateAndroid29_dir("SYMA FPV_P");
-            sLocalVideo = F_CreateAndroid29_dir("SYMA FPV_V");
+            sLocalPhoto = F_CreateAndroid10_dir("SYMA FPV_P");
+            sLocalVideo = F_CreateAndroid10_dir("SYMA FPV_V");
 
             if(Environment.isExternalStorageLegacy()) {
                 String StroragePath = "";
@@ -395,27 +395,33 @@ public class JH_App {
         if (mContext == null)
             return;
 
+
+        // /SYMA fly/SYMA fly_P
+        // /SYMA fly/SYMA fly_V/
+
         if (isAndroidQ()) {
-            sLocalPhoto = F_CreateAndroid29_dir("SYMA fly_P");
-            sLocalVideo = F_CreateAndroid29_dir("SYMA fly_V");
+            sLocalPhoto = F_CreateAndroid10_dir(Environment.DIRECTORY_PICTURES);
+            sLocalVideo = F_CreateAndroid10_dir(Environment.DIRECTORY_MOVIES);
+//            sLocalPhoto = F_CreateAndroid29_dir("SYMA fly_P");
+//            sLocalVideo = F_CreateAndroid29_dir("SYMA fly_V");
+//
+//            if(Environment.isExternalStorageLegacy()) {
+//                String StroragePath = "";
+//                try {
+//                    StroragePath = Storage.getNormalSDCardPath();
+//                } catch (Exception e) {
+//                    return;
+//                }
+//                if (StroragePath.length() == 0) {
+//                    StroragePath = Storage.getNormalSDCardPath();
+//                }
+//
+//                sLocalPhoto1 = String.format("%s/SYMA fly/SYMA fly_P", StroragePath);
+//                sLocalVideo1 = String.format("%s/SYMA fly/SYMA fly_V", StroragePath);
+//
+//                F_CheckAndroid10();
 
-            if(Environment.isExternalStorageLegacy()) {
-                String StroragePath = "";
-                try {
-                    StroragePath = Storage.getNormalSDCardPath();
-                } catch (Exception e) {
-                    return;
-                }
-                if (StroragePath.length() == 0) {
-                    StroragePath = Storage.getNormalSDCardPath();
-                }
-
-                sLocalPhoto1 = String.format("%s/SYMA fly/SYMA fly_P", StroragePath);
-                sLocalVideo1 = String.format("%s/SYMA fly/SYMA fly_V", StroragePath);
-
-                F_CheckAndroid10();
-
-            }
+//            }
 
         } else {
             String StroragePath = "";
@@ -449,7 +455,7 @@ public class JH_App {
     }
 
 
-    private static String F_CreateAndroid29_dir(String sDir) {
+    private static String F_CreateAndroid10_dir(String sDir) {
         if (sDir != null && sDir.length() > 1) {
             File file = mContext.getExternalFilesDir(sDir);
             if (file != null)
@@ -467,21 +473,21 @@ public class JH_App {
             return;
         if (isAndroidQ())
         {
-            sLocalPhoto = F_CreateAndroid29_dir(LocalPhoto);
+            sLocalPhoto = F_CreateAndroid10_dir(LocalPhoto);
             if (sLocalPhoto == null) {
-                sLocalPhoto = F_CreateAndroid29_dir("SYMA_Photo_JH");
+                sLocalPhoto = F_CreateAndroid10_dir("SYMA_Photo_JH");
             }
-            sLocalVideo = F_CreateAndroid29_dir(LocalVideo);
+            sLocalVideo = F_CreateAndroid10_dir(LocalVideo);
             if (sLocalVideo == null) {
-                sLocalVideo = F_CreateAndroid29_dir("SYMA_Video_JH");
+                sLocalVideo = F_CreateAndroid10_dir("SYMA_Video_JH");
             }
-            sRemotePhoto = F_CreateAndroid29_dir(SDPhoto);
+            sRemotePhoto = F_CreateAndroid10_dir(SDPhoto);
             if (sRemotePhoto == null) {
-                sRemotePhoto = F_CreateAndroid29_dir("SYMA_SDPhoto_JH");
+                sRemotePhoto = F_CreateAndroid10_dir("SYMA_SDPhoto_JH");
             }
-            sRemoteVideo = F_CreateAndroid29_dir(SDVideo);
+            sRemoteVideo = F_CreateAndroid10_dir(SDVideo);
             if (sRemoteVideo == null) {
-                sRemoteVideo = F_CreateAndroid29_dir("SYMA_SDVideo_JH");
+                sRemoteVideo = F_CreateAndroid10_dir("SYMA_SDVideo_JH");
             }
 
         } else {
@@ -775,6 +781,7 @@ public class JH_App {
         return  false;
     }
 
+    public static  boolean bSymaFly = false;
     public static void F_Save2ToGallery(String filename, boolean bPhoto) {
         //保存图片后发送广播通知更新数据库
         if (mContext == null)
@@ -787,6 +794,17 @@ public class JH_App {
 
             String sVedor = file1.getParent();
             sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
+            if(bSymaFly)
+            {
+                if(bPhoto)
+                {
+                    sVedor = "SYMA fly_P";
+                }
+                else
+                {
+                    sVedor = "SYMA fly_V";
+                }
+            }
 
             String slocal = "";
             if (bPhoto) {
@@ -884,6 +902,7 @@ public class JH_App {
 
             if (isAndroidQ()) {
 
+
                 File file1 = new File(imgPath);
                 if (!file1.exists()) {
                     return;
@@ -892,6 +911,7 @@ public class JH_App {
                 String sVedor = file1.getParent();
                 sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
 
+
                 String slocal = "";
                 boolean bPhoto = false;
                 if (stype.equalsIgnoreCase("jpg") || stype.equalsIgnoreCase("png"))
@@ -899,8 +919,16 @@ public class JH_App {
                     bPhoto = true;
                 }
                 if (bPhoto) {
+                    if(bSymaFly)
+                    {
+                        sVedor = "SYMA fly_P";
+                    }
                     slocal = Environment.DIRECTORY_PICTURES + File.separator + sVedor;
                 } else {
+                    if(bSymaFly)
+                    {
+                        sVedor = "SYMA fly_V";
+                    }
                     slocal = Environment.DIRECTORY_MOVIES + File.separator + sVedor;
                 }
                 if(!slocal.endsWith("/"))

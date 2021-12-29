@@ -35,7 +35,8 @@ public class Storage {
      * @return
      */
     public static String getNormalSDCardPath() {
-        return Environment.getExternalStorageDirectory().getPath();
+        return       Environment.getExternalStorageDirectory().getAbsolutePath();
+
     }
 
 
