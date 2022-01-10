@@ -5,12 +5,12 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
     //buildToolsVersion '29.0.3'
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -44,9 +44,12 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-    implementation 'androidx.transition:transition:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.transition:transition:1.4.0'
+
+
+
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'org.simple:androideventbus:1.0.5.1'
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
