@@ -748,7 +748,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
                     }
                     else
                     {
-                        wifination.naSetRecordWH(-1,-1);
+                        wifination.naSetRecordWH(640,480);
                     }
                     wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
 //                    new Handler().postDelayed(new Runnable() {
@@ -800,7 +800,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
             }
             else
             {
-                wifination.naSetRecordWH(-1,-1);
+                wifination.naSetRecordWH(640,480);
             }
         }
 

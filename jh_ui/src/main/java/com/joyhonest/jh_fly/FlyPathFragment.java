@@ -191,7 +191,7 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
                     }
                     else
                     {
-                        wifination.naSetRecordWH(-1,-1);
+                        wifination.naSetRecordWH(640,480);
                     }
                 }
 
@@ -235,7 +235,7 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
                     }
                     else
                     {
-                        wifination.naSetRecordWH(-1,-1);
+                        wifination.naSetRecordWH(640,480);
                     }
                     wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
                     Record_Time_TextCtrl.setText("00:00");

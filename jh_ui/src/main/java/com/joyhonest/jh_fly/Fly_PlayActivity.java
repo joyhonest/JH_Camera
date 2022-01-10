@@ -113,7 +113,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             //  if(surfaceHolder!=null)
             //  JH_App.F_OpenStream(surfaceHolder.getSurface());
             nDispStyle = 0;
-            //wifination.naSetRecordWH(1920,1080);
+            wifination.naSetRecordWH(640,480);
             wifination.naSetDispStyle(nDispStyle);
             wifination.naInit("");
             JH_App.F_GetWifiType();
