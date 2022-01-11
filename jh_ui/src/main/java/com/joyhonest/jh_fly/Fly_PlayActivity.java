@@ -148,7 +148,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JH_App.bSymaFly = true;
+        JH_App.nAppType = 0;
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
         wifination.naSetRecordAudio(JH_App.bRecordVoice);

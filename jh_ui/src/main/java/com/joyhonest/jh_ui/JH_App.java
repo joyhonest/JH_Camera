@@ -402,27 +402,6 @@ public class JH_App {
         if (isAndroidQ()) {
             sLocalPhoto = F_CreateAndroid10_dir(Environment.DIRECTORY_PICTURES);
             sLocalVideo = F_CreateAndroid10_dir(Environment.DIRECTORY_MOVIES);
-//            sLocalPhoto = F_CreateAndroid29_dir("SYMA fly_P");
-//            sLocalVideo = F_CreateAndroid29_dir("SYMA fly_V");
-//
-//            if(Environment.isExternalStorageLegacy()) {
-//                String StroragePath = "";
-//                try {
-//                    StroragePath = Storage.getNormalSDCardPath();
-//                } catch (Exception e) {
-//                    return;
-//                }
-//                if (StroragePath.length() == 0) {
-//                    StroragePath = Storage.getNormalSDCardPath();
-//                }
-//
-//                sLocalPhoto1 = String.format("%s/SYMA fly/SYMA fly_P", StroragePath);
-//                sLocalVideo1 = String.format("%s/SYMA fly/SYMA fly_V", StroragePath);
-//
-//                F_CheckAndroid10();
-
-//            }
-
         } else {
             String StroragePath = "";
             try {
@@ -465,6 +444,61 @@ public class JH_App {
             }
         }
         return null;
+    }
+
+    public static void F_CreatSyMaGoDir()
+    {
+        if (mContext == null)
+            return;
+
+
+        // /SYMA fly/SYMA fly_P
+        // /SYMA fly/SYMA fly_V/
+
+        if (isAndroidQ()) {
+            sLocalPhoto = F_CreateAndroid10_dir(Environment.DIRECTORY_PICTURES);
+            sLocalVideo = F_CreateAndroid10_dir(Environment.DIRECTORY_MOVIES);
+        } else {
+            String StroragePath = "";
+            try {
+                StroragePath = Storage.getNormalSDCardPath();
+            } catch (Exception e) {
+                return;
+            }
+            if (StroragePath.length() == 0) {
+                StroragePath = Storage.getNormalSDCardPath();
+            }
+
+            File fdir;
+            boolean bCreateOK = false;
+            sLocalPhoto = String.format("%s/SYMA GO/LOCAL/SYMA-PHOTO", StroragePath);
+            fdir = new File(sLocalPhoto);
+            if (!fdir.exists()) {
+                fdir.mkdirs();
+            }
+            sLocalVideo = String.format("%s/SYMA GO/LOCAL/SYMA-VIDEO", StroragePath);
+            fdir = new File(sLocalVideo);
+            if (!fdir.exists()) {
+                fdir.mkdirs();
+            }
+
+            sRemotePhoto = String.format("%s/SYMA GO/SDCARD/SYMASD-PHOTO", StroragePath);
+            fdir = new File(sRemotePhoto);
+            if (!fdir.exists()) {
+                fdir.mkdirs();
+            }
+
+            sRemoteVideo = String.format("%s/SYMA GO/SDCARD/SYMASD-VIDEO", StroragePath);
+            fdir = new File(sRemotePhoto);
+            if (!fdir.exists()) {
+                fdir.mkdirs();
+            }
+
+
+
+
+        }
+
     }
 
     public static void F_CreateLocalDir(String LocalPhoto, String LocalVideo, String SDPhoto, String SDVideo) {
@@ -781,7 +815,9 @@ public class JH_App {
         return  false;
     }
 
-    public static  boolean bSymaFly = false;
+    public static  int  nAppType = 0;
+    // 0 Fly
+    // 1 SymaGo
     public static void F_Save2ToGallery(String filename, boolean bPhoto) {
         //保存图片后发送广播通知更新数据库
         if (mContext == null)
@@ -794,7 +830,7 @@ public class JH_App {
 
             String sVedor = file1.getParent();
             sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
-            if(bSymaFly)
+            if(nAppType == 0)
             {
                 if(bPhoto)
                 {
@@ -803,6 +839,17 @@ public class JH_App {
                 else
                 {
                     sVedor = "SYMA fly_V";
+                }
+            }
+            else if(nAppType == 1)
+            {
+                if(bPhoto)
+                {
+                    sVedor = "SYMA-PHOTO";
+                }
+                else
+                {
+                    sVedor = "SYMA-VIDEO";
                 }
             }
 
@@ -919,15 +966,23 @@ public class JH_App {
                     bPhoto = true;
                 }
                 if (bPhoto) {
-                    if(bSymaFly)
+                    if(nAppType == 0)
                     {
                         sVedor = "SYMA fly_P";
                     }
+                    else if(nAppType == 1)
+                    {
+                        sVedor = "SYMA-PHOTO";
+                    }
                     slocal = Environment.DIRECTORY_PICTURES + File.separator + sVedor;
                 } else {
-                    if(bSymaFly)
+                    if(nAppType == 0)
                     {
                         sVedor = "SYMA fly_V";
+                    }
+                    else if(nAppType == 1)
+                    {
+                        sVedor = "SYMA-VIDEO";
                     }
                     slocal = Environment.DIRECTORY_MOVIES + File.separator + sVedor;
                 }

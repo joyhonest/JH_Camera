@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -164,6 +165,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JH_App.nAppType = 1;
         JH_App.F_InitMusic();
         wifination.naSetRevBmp(true);
 
@@ -186,22 +188,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 setContentView(R.layout.activity_play_jh);
+                JH_App.F_CreatSyMaGoDir();
                 F_Init();
-                /*  BYd
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        int nW = Fragment_Layout.getWidth();
-                        int nH = Fragment_Layout.getHeight();
-                        RelativeLayout.LayoutParams  params =(RelativeLayout.LayoutParams) glSurfaceView.getLayoutParams();
-                        params.width = nW/2;
-                        params.height = nH/2;
-                        params.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
-                        glSurfaceView.setLayoutParams(params);
-
-                    }
-                },200);
-                */
             }
         }, new Runnable() {
             @Override
@@ -210,7 +198,18 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.LENGTH_SHORT).show();
                 finish();
             }
-        }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        });
+
+        if(JH_App.isAndroidQ())
+        {
+            setContentView(R.layout.activity_play_jh);
+            JH_App.F_CreatSyMaGoDir();
+            F_Init();
+        }
+        else
+        {
+            mAsker.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
 
     }
 
@@ -993,8 +992,26 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 if (file.exists() && !file.isDirectory()) {
                     fileName = file.getAbsolutePath();
                     String fileName1 = fileName.toLowerCase();
+
+                    fileName = file.getAbsolutePath();
+                    String sVedor = file.getParent();
+                    sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
+                    String slocal = "";
+
                     if (fileName1.endsWith(".jpg") || fileName1.endsWith(".png")) {
-                        JH_App.mLocal_PhotosList.add(fileName);
+                        sVedor ="SYMA-PHOTO";
+                        if(JH_App.isAndroidQ()) {
+                            slocal = Environment.DIRECTORY_PICTURES + File.separator + sVedor;
+                            String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
+                            if (JH_App.F_CheckIsExit(slocal, sfile, true)) {
+                                JH_App.mLocal_PhotosList.add(fileName);
+                            } else {
+                                file.delete();
+                            }
+                        }
+                        else {
+                            JH_App.mLocal_PhotosList.add(fileName);
+                        }
                     }
                 }
             }
@@ -1009,16 +1026,36 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 if (file.exists() && !file.isDirectory()) {
                     fileName = file.getAbsolutePath();
                     String fileName1 = fileName.toLowerCase();
+
+                    String sVedor = file.getParent();
+                    sVedor = sVedor.substring(sVedor.lastIndexOf("/") + 1);
+
                     if (fileName1.endsWith(".mp4")) {
 
                         long nsize = getFileSize(file);
                         //bitmap = JH_App.getVideoThumbnail(fileName);
                         //if(bitmap!=null)
                         if (nsize > 1200) {
-                            JH_App.mLocal_VideosList.add(fileName);
+
+                            if(JH_App.isAndroidQ()) {
+                                sVedor ="SYMA-VIDEO";
+                                String slocal = Environment.DIRECTORY_MOVIES + File.separator + sVedor;
+                                String sfile = fileName.substring(fileName.lastIndexOf("/") + 1);
+                                if (JH_App.F_CheckIsExit(slocal, sfile, false)) {
+                                    JH_App.mLocal_VideosList.add(fileName);
+                                } else {
+                                    file.delete();
+                                }
+                            }
+                            else {
+                                JH_App.mLocal_VideosList.add(fileName);
+                            }
                         } else {
                             file.delete();
                         }
+
+
+
 
                     } else {
                         if ((JH_App.nSdStatus & JH_App.LocalRecording) == 0)

@@ -55,7 +55,7 @@ dependencies {
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 
-//1.06
+//1.08
 
 //git commit -m "xxx" -a
 //git push -u origin main
