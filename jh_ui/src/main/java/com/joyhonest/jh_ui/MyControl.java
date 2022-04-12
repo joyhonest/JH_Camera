@@ -1634,12 +1634,17 @@ public class MyControl extends RelativeLayout implements SensorEventListener {
             canvas.drawText(Str2, (centx - Radius - 10), centy, paint);
             canvas.rotate(90, (centx - Radius - 10), centy);
             DrawCir(canvas);
-            DrawH_bar(canvas);
+            if(bDispAdjH) {
+                DrawH_bar(canvas);
+            }
             if ((nType & TYPE_No_ADJY) == 0) {
                 DrawV_bar(canvas);
             }
         }
 
+
+        public  boolean bDispAdjH = true;
+        public  boolean bDispAdjV = true;
 
         @Override
         protected void onSizeChanged(int width, int height, int oldw, int oldh) {

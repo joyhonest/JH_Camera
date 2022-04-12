@@ -167,6 +167,7 @@ public class main_fragment extends Fragment implements View.OnClickListener {
         But_KeyStop = (Button) view.findViewById(R.id.button18);
 
         myControl = (MyControl) view.findViewById(R.id.myControl);
+        myControl.RockeLeft.bDispAdjH = false;
 
         But_Snap = (Button) view.findViewById(R.id.buttonSNap);
         But_Record = (Button) view.findViewById(R.id.buttonRecord);

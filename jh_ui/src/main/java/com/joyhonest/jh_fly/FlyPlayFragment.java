@@ -147,6 +147,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         // myControl.F_SetImage(R.mipmap.cir_back_fly_jh_b, R.mipmap.cir_fly_jh);
         myControl.F_SetImage(R.mipmap.cir_back_fly_jh, R.mipmap.cir_fly_jh);
         myControl.F_SetDispText(false);
+        myControl.RockeLeft.bDispAdjH = false;
 
         Record_Time_TextCtrl = (TextView) view.findViewById(R.id.Record_textView);
 

@@ -26,7 +26,7 @@ public class StartActivity extends Activity {
                 //Intent mainIntent = new Intent(StartActivity.this,Fly_PlayActivity.class);
                 Intent mainIntent = new Intent(StartActivity.this,PlayActivity.class);
                 //Intent mainIntent = new Intent(StartActivity.this, ultradrone_acitvity.class);
-                //Intent mainIntent = new Intent(StartActivity.this, PlayActivity.class);
+
                 startActivity(mainIntent);
             }
         });

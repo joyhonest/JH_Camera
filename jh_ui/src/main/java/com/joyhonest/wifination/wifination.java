@@ -454,7 +454,8 @@ public class wifination {
         }
         else
         {
-            return naSetRecordWH(-1, -1); //默认摄像头传来的分辨率
+            return naSetRecordWH(640,480);
+            //return naSetRecordWH(-1, -1); //默认摄像头传来的分辨率
         }
     }
 
