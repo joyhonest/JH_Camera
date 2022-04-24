@@ -181,18 +181,18 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
 
                 if ((JH_App.nSdStatus & JH_App.LocalRecording) == 0)
                 {
-                    if(JH_App.nResolution==2)
-                    {
-                        wifination.naSetRecordWH(1920,1080);
-                    }
-                    else if(JH_App.nResolution==1)
-                    {
-                        wifination.naSetRecordWH(1280,720);
-                    }
-                    else
-                    {
-                        wifination.naSetRecordWH(640,480);
-                    }
+//                    if(JH_App.nResolution==2)
+//                    {
+//                        wifination.naSetRecordWH(1920,1080);
+//                    }
+//                    else if(JH_App.nResolution==1)
+//                    {
+//                        wifination.naSetRecordWH(1280,720);
+//                    }
+//                    else
+//                    {
+//                        wifination.naSetRecordWH(640,480);
+//                    }
                 }
 
 
@@ -225,18 +225,18 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
                     Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_record_icon_fly_jh);
                 } else {
                     String strRecordFilename = JH_App.F_GetSaveName(false);
-                    if(JH_App.nResolution==2)
-                    {
-                        wifination.naSetRecordWH(1920,1080);
-                    }
-                    else if(JH_App.nResolution==1)
-                    {
-                        wifination.naSetRecordWH(1280,720);
-                    }
-                    else
-                    {
-                        wifination.naSetRecordWH(640,480);
-                    }
+//                    if(JH_App.nResolution==2)
+//                    {
+//                        wifination.naSetRecordWH(1920,1080);
+//                    }
+//                    else if(JH_App.nResolution==1)
+//                    {
+//                        wifination.naSetRecordWH(1280,720);
+//                    }
+//                    else
+//                    {
+//                        wifination.naSetRecordWH(640,480);
+//                    }
                     wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
                     Record_Time_TextCtrl.setText("00:00");
                     Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_recording_icon_fly_jh);

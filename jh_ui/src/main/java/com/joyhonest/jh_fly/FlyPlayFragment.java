@@ -693,37 +693,6 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
                 return;
             if (bPhoto) {
                 F_Photo();
-                /*
-                if ((JH_App.nSdStatus & JH_App.SD_SNAP) != 0)     //SD 拍照还没有完成。就不进行此次拍照
-                    return;
-
-                if (JH_App.bPhone_SNAP)
-                    return;
-                JH_App.bPhone_SNAP = true;
-
-                final String str = JH_App.F_GetSaveName(true);
-                wifination.naSnapPhoto(str, wifination.TYPE_BOTH_PHONE_SD);
-
-                JH_App.F_PlayPhoto();
-                photo_mask.setVisibility(View.VISIBLE);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        photo_mask.setVisibility(View.GONE);
-                    }
-                }, 120);
-
-
-                Handler handler = new Handler();
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        JH_App.bPhone_SNAP = false;
-                    }
-                };
-                handler.postDelayed(runnable, 800);
-                */
-
             } else {
                 if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0) {
                     Log.e("Error:", "Not DispVideo!");
@@ -738,19 +707,19 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
                 } else {
                     strRecordFilename = JH_App.F_GetSaveName(false);
                     JH_App.F_PlayStartRecord();
-                    if(JH_App.nResolution==2)
-                    {
-                        wifination.naSetRecordWH(1920,1080);
-                    }
-                    else if(JH_App.nResolution==1)
-                    {
-                        wifination.naSetRecordWH(1280,720);
-
-                    }
-                    else
-                    {
-                        wifination.naSetRecordWH(640,480);
-                    }
+//                    if(JH_App.nResolution==2)
+//                    {
+//                        wifination.naSetRecordWH(1920,1080);
+//                    }
+//                    else if(JH_App.nResolution==1)
+//                    {
+//                        wifination.naSetRecordWH(1280,720);
+//
+//                    }
+//                    else
+//                    {
+//                        wifination.naSetRecordWH(640,480);
+//                    }
                     wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
 //                    new Handler().postDelayed(new Runnable() {
 //                        @Override
@@ -790,19 +759,18 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
         if ((JH_App.nSdStatus & JH_App.LocalRecording) == 0)
         {
-            if(JH_App.nResolution==2)
-            {
-                wifination.naSetRecordWH(1920,1080);
-            }
-            else if(JH_App.nResolution==1)
-            {
-                wifination.naSetRecordWH(1280,720);
-
-            }
-            else
-            {
-                wifination.naSetRecordWH(640,480);
-            }
+//            if(JH_App.nResolution==2)
+//            {
+//                wifination.naSetRecordWH(1920,1080);
+//            }
+//            else if(JH_App.nResolution==1)
+//            {
+//                wifination.naSetRecordWH(1280,720);
+//            }
+//            else
+//            {
+//                wifination.naSetRecordWH(640,480);
+//            }
         }
 
         wifination.naSnapPhoto(str, wifination.TYPE_BOTH_PHONE_SD);

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -110,10 +111,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     private Runnable openRunnable = new Runnable() {
         @Override
         public void run() {
-            //  if(surfaceHolder!=null)
-            //  JH_App.F_OpenStream(surfaceHolder.getSurface());
+
             nDispStyle = 0;
-            wifination.naSetRecordWH(640,480);
             wifination.naSetDispStyle(nDispStyle);
             wifination.naInit("");
             JH_App.F_GetWifiType();
@@ -125,12 +124,14 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             data[4]='D';
             data[5]=0x40;
             data[6]=0x01;
-
-
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
+            SystemClock.sleep(20);
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
+            SystemClock.sleep(20);
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
+            SystemClock.sleep(20);
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
+            SystemClock.sleep(20);
         }
     };
     private PermissionAsker mAsker;
@@ -149,6 +150,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JH_App.nAppType = 0;
+        JH_App.nResolution = 0;
+        wifination.naSetRecordWH(640,480);
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
         wifination.naSetRecordAudio(JH_App.bRecordVoice);
@@ -157,9 +160,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         JH_App.nType = JH_App.nStyle_fly;
         JH_App.F_InitMusic();
         wifination.naSetRevBmp(true);
-        JH_App.nResolution = 0;
         F_Init();
-
         if(JH_App.isAndroidQ())
         {
             JH_App.F_CreateLocalFlyDefalutDir();
@@ -223,6 +224,15 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             if (cmd[0] == 0x40 && cmd[1] == 0x01)
             {
                 JH_App.nResolution = cmd[2];
+                if(!wifination.isPhoneRecording()) {
+                    if (JH_App.nResolution == 2) {
+                        wifination.naSetRecordWH(1920, 1080);
+                    } else if (JH_App.nResolution == 1) {
+                        wifination.naSetRecordWH(1280, 720);
+                    } else {
+                        wifination.naSetRecordWH(640, 480);
+                    }
+                }
             }
         }
     }
@@ -369,7 +379,6 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
         } else {
             wifination.naStopRecord(wifination.TYPE_ONLY_PHONE);
-            //wifination.naSetVideoSurface(null);
             wifination.naCancelDownload();
             wifination.naCancelGetThumb();
             wifination.naStop();

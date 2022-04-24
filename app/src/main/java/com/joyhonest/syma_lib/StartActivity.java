@@ -23,8 +23,8 @@ public class StartActivity extends Activity {
         findViewById(R.id.Start_Btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent mainIntent = new Intent(StartActivity.this,Fly_PlayActivity.class);
-                Intent mainIntent = new Intent(StartActivity.this,PlayActivity.class);
+                Intent mainIntent = new Intent(StartActivity.this,Fly_PlayActivity.class);
+                //Intent mainIntent = new Intent(StartActivity.this,PlayActivity.class);
                 //Intent mainIntent = new Intent(StartActivity.this, ultradrone_acitvity.class);
 
                 startActivity(mainIntent);
