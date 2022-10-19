@@ -117,6 +117,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     // private SurfaceHolder surfaceHolder;
     //private SurfaceView surfaceView = null;
 
+
+    private boolean bFirsetOpen = false;
     private HandlerThread thread1;
     private Handler openHandler;
     private Runnable openRunnable = new Runnable() {
@@ -124,6 +126,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         public void run() {
             {
                 //JH_App.F_OpenStream();
+                bFirsetOpen = true;
                 JH_App.F_OpenCamera(true);
                 if (main_fragment != null) {
                     runOnUiThread(new Runnable() {
@@ -291,7 +294,21 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private void ReviceBMP(Bitmap bmp)
     {
         //imageView4.setImageBitmap(bmp);
-        DispImageView.setImageBitmap(bmp);
+        if(bFirsetOpen)
+        {
+
+
+            if(bmp.getHeight()==360)
+            {
+                    wifination.naSetRecordWH(640 , 480);
+            }
+
+            bFirsetOpen = false;
+        }
+        else {
+            DispImageView.setImageBitmap(bmp);
+        }
+
     }
 
     boolean bFirst = false;

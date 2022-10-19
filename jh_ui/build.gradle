@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 //apply plugin: 'com.novoda.bintray-release'
 //apply plugin: 'com.github.panpf.bintray-publish'
-apply plugin: 'com.github.dcendents.android-maven'
+//apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
@@ -54,6 +54,6 @@ dependencies {
 }
 
 //1.09
-
-//git commit -m "1.09" -a
+//1.11  添加SymaGo 如果摄像头的分辨率为 640 *360 就改为 640 * 480；
+//git commit -m "1.11" -a
 //git push -u origin main
