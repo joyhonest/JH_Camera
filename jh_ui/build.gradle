@@ -55,5 +55,6 @@ dependencies {
 
 //1.09
 //1.11  添加SymaGo 如果摄像头的分辨率为 640 *360 就改为 640 * 480；
+//1.12  添加1280 * 720 的支持
 //git commit -m "1.11" -a
 //git push -u origin main

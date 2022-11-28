@@ -151,7 +151,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         JH_App.nAppType = 0;
         JH_App.nResolution = 0;
-        wifination.naSetRecordWH(640,480);
+        //wifination.naSetRecordWH(640,480);
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
         wifination.naSetRecordAudio(JH_App.bRecordVoice);

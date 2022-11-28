@@ -296,13 +296,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         //imageView4.setImageBitmap(bmp);
         if(bFirsetOpen)
         {
-
-
-            if(bmp.getHeight()==360)
+            if(bmp.getHeight()<=360)
             {
-                    wifination.naSetRecordWH(640 , 480);
+                wifination.naSetRecordWH(640 , 480);
             }
-
             bFirsetOpen = false;
         }
         else {

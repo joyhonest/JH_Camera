@@ -278,7 +278,7 @@ public class main_fragment extends Fragment implements View.OnClickListener {
             But_KeyUp.setVisibility(View.VISIBLE);
             But_KeyDn.setVisibility(View.VISIBLE);
             But_KeyDn.setBackgroundResource(R.mipmap.landing_nor_jh);
-            wifination.naGkASetRecordResolution(false);
+            //wifination.naGkASetRecordResolution(false);
             return;
         }
         String str = wifination.naGetControlType();
