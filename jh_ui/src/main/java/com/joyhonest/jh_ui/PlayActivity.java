@@ -187,6 +187,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         wifination.appContext = getApplicationContext();
         wifination.naSetVrBackground(false);
 
+
         mAsker = new PermissionAsker(10, new Runnable() {
             @Override
             public void run() {
@@ -203,15 +204,20 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        if(JH_App.isAndroidQ())
+//        if(JH_App.isAndroidQ())
+//        {
+//            setContentView(R.layout.activity_play_jh);
+//            JH_App.F_CreatSyMaGoDir();
+//            F_Init();
+//        }
+//        else
+        if(Build.VERSION.SDK_INT>=33)
         {
-            setContentView(R.layout.activity_play_jh);
-            JH_App.F_CreatSyMaGoDir();
-            F_Init();
+            mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES);
         }
         else
         {
-            mAsker.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            mAsker.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
 
     }

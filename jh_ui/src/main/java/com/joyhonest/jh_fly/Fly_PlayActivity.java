@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 
 import android.location.Location;
 
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -167,6 +168,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if(Build.VERSION.SDK_INT>=33)
+        //if(true)
         {
              mAsker = new PermissionAsker(10, new Runnable() {
                     @Override
@@ -178,7 +180,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                     public void run() {
                         F_DispAlert();
                     }
-                }).askPermission(this, Manifest.Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO);
+                }).askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO);
         }
         else
         {

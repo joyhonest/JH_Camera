@@ -3,6 +3,7 @@ package com.joyhonest.jh_fpv;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import androidx.annotation.NonNull;
@@ -50,21 +51,37 @@ public class FpvActivity extends AppCompatActivity implements View.OnClickListen
         wifination.naSetVrBackground(true);
         JH_App.F_InitMusic();
 
-
-
-        mAsker = new PermissionAsker(10, new Runnable() {
-            @Override
-            public void run() {
-                F_Init();
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(FpvActivity.this, "The necessary permission denied, the application exit",
-                        Toast.LENGTH_SHORT).show();
-                finish();
-            }
-        }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if(Build.VERSION.SDK_INT>=33)
+        {
+            mAsker = new PermissionAsker(10, new Runnable() {
+                @Override
+                public void run() {
+                    F_Init();
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(FpvActivity.this, "The necessary permission denied, the application exit",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }).askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES);
+        }
+        else {
+            mAsker = new PermissionAsker(10, new Runnable() {
+                @Override
+                public void run() {
+                    F_Init();
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(FpvActivity.this, "The necessary permission denied, the application exit",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
 
         RssiHander.post(RssiRunable);
 

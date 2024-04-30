@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -76,7 +77,31 @@ public class ultradrone_acitvity extends AppCompatActivity  implements View.OnCl
         JH_App.F_InitMusic();
 
 
-        if(!JH_App.isAndroidQ()) {
+        //if(!JH_App.isAndroidQ())
+        if(Build.VERSION.SDK_INT>=33)
+        {
+            mAsker = new PermissionAsker(10, new Runnable() {
+                @Override
+                public void run() {
+                    wifination.naSetRevBmp(true);
+                    bVR = false;
+                    JH_App.F_CreateLocalDir("Ultradrone","UltradroneV",null,null);
+                    wifination.naSet3D(bVR);
+                    JH_App.nSdStatus = 0;
+                    JH_App.bIsRevBmp = false;
+                    wifination.naInit("");
+
+                }
+            }, new Runnable() {
+                @Override
+                public void run() {
+                    F_DispAlert();
+
+                }
+            }).askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES);
+        }
+        else
+        {
             mAsker = new PermissionAsker(10, new Runnable() {
                 @Override
                 public void run() {
@@ -95,19 +120,19 @@ public class ultradrone_acitvity extends AppCompatActivity  implements View.OnCl
                     F_DispAlert();
 
                 }
-            }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }).askPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
-        else
-        {
-            JH_App.F_CreateLocalDir("UltradroneP","UltradroneV",null,null);
-            bVR = false;
-            JH_App.nSdStatus = 0;
-            JH_App.bIsRevBmp = false;
-            wifination.naSetRevBmp(true);
-            wifination.naSet3D(bVR);
-            wifination.naInit("");
-
-        }
+//        else
+//        {
+//            JH_App.F_CreateLocalDir("UltradroneP","UltradroneV",null,null);
+//            bVR = false;
+//            JH_App.nSdStatus = 0;
+//            JH_App.bIsRevBmp = false;
+//            wifination.naSetRevBmp(true);
+//            wifination.naSet3D(bVR);
+//            wifination.naInit("");
+//
+//        }
 
         RssiHander.post(RssiRunable);
 

@@ -769,7 +769,7 @@ public class grid_fpv extends AppCompatActivity implements View.OnClickListener 
         } finally {
             try {
                 retriever.release();
-            } catch (RuntimeException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

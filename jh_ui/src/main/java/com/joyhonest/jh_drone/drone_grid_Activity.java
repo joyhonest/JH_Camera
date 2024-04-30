@@ -398,7 +398,7 @@ public class drone_grid_Activity extends AppCompatActivity  implements View.OnCl
         } finally {
             try {
                 retriever.release();
-            } catch (RuntimeException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

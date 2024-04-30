@@ -411,7 +411,7 @@ public class ulgridActivity extends AppCompatActivity implements View.OnClickLis
         } finally {
             try {
                 retriever.release();
-            } catch (RuntimeException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
