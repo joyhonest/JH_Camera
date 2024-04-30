@@ -166,17 +166,35 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             JH_App.F_CreateLocalFlyDefalutDir();
         }
 
-        mAsker = new PermissionAsker(10, new Runnable() {
-                @Override
-                public void run() {
-                    JH_App.F_CreateLocalFlyDefalutDir();
-                }
-            }, new Runnable() {
-                @Override
-                public void run() {
-                    F_DispAlert();
-                }
-            }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO);
+        if(Build.VERSION.SDK_INT>=33)
+        {
+             mAsker = new PermissionAsker(10, new Runnable() {
+                    @Override
+                    public void run() {
+                        JH_App.F_CreateLocalFlyDefalutDir();
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        F_DispAlert();
+                    }
+                }).askPermission(this, Manifest.Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO);
+        }
+        else
+        {
+            
+            mAsker = new PermissionAsker(10, new Runnable() {
+                    @Override
+                    public void run() {
+                        JH_App.F_CreateLocalFlyDefalutDir();
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        F_DispAlert();
+                    }
+                }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO);
+        }
 
         DispImageView.post(new Runnable() {
             @Override
