@@ -49,12 +49,14 @@ dependencies {
     implementation 'androidx.transition:transition:1.4.0'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'org.simple:androideventbus:1.0.5.1'
+    //implementation 'org.simple:androideventbus:1.0.5.1'
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 
 //1.09
 //1.11  添加SymaGo 如果摄像头的分辨率为 640 *360 就改为 640 * 480；
 //1.12  添加1280 * 720 的支持
-//git commit -m "1.16" -a
+
+//1.17  把Eventbus 内置.
+//git commit -m "1.17" -a
 //git push -u origin main

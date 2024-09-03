@@ -203,14 +203,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
             }
         });
-
-//        if(JH_App.isAndroidQ())
-//        {
-//            setContentView(R.layout.activity_play_jh);
-//            JH_App.F_CreatSyMaGoDir();
-//            F_Init();
-//        }
-//        else
         if(Build.VERSION.SDK_INT>=33)
         {
             mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES);
@@ -1004,7 +996,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             MyThread_GetFileNumber thread_getFileNumber = new MyThread_GetFileNumber(this);
             thread_getFileNumber.start();
         } else {
-
             File f = new File(JH_App.sLocalPhoto);
             File[] files = f.listFiles();// 列出所有文件
             String fileName;

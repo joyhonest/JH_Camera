@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.window.OnBackInvokedDispatcher;
+
+import androidx.annotation.NonNull;
 
 import com.joyhonest.Ultradrone.ultradrone_acitvity;
 import com.joyhonest.jh_drone.droneActivity;
@@ -30,6 +33,11 @@ public class StartActivity extends Activity {
                 startActivity(mainIntent);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override
