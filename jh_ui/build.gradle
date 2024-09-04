@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -57,6 +57,7 @@ dependencies {
 //1.11  添加SymaGo 如果摄像头的分辨率为 640 *360 就改为 640 * 480；
 //1.12  添加1280 * 720 的支持
 
-//1.17  把Eventbus 内置.
-//git commit -m "1.17" -a
+//1.17  把Eventbus 内置. 2024-0902
+//1.18  把Eventbus 内置 2024-0903
+//git commit -m "1.18" -a
 //git push -u origin main

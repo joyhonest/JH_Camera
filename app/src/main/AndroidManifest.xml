@@ -11,6 +11,7 @@
 
         android:theme="@style/AppTheme">
         <activity android:name=".StartActivity"
+            android:exported="true"
                   android:screenOrientation="sensorLandscape"
                   android:theme="@style/AppTheme">
             <intent-filter>

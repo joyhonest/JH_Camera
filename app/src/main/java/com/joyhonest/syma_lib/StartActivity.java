@@ -15,6 +15,8 @@ import com.joyhonest.jh_fpv.FpvActivity;
 import com.joyhonest.jh_ui.JH_App;
 import com.joyhonest.jh_ui.PlayActivity;
 
+import org.simple.eventbus.EventBus;
+
 
 public class StartActivity extends Activity {
 
