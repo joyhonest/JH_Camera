@@ -59,5 +59,6 @@ dependencies {
 
 //1.17  把Eventbus 内置. 2024-0902
 //1.18  把Eventbus 内置 2024-0903
-//git commit -m "1.18" -a
+//1.19  把SDK改为最新版本。
+//git commit -m "1.19" -a
 //git push -u origin main

@@ -254,7 +254,7 @@ public class main_fragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 bFlib = !bFlib;
-                wifination.naSetFlip(bFlib);
+                wifination.naSetFilp(bFlib);
                 wifination.F_AdjBackGround(getActivity(), R.mipmap.loginbackground_jh);
             }
         });

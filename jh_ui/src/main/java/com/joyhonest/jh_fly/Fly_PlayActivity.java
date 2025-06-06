@@ -319,8 +319,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    @Subscriber(tag ="ReviceBMP")
-    private void ReviceBMP(Bitmap bmp)
+    @Subscriber(tag ="ReceiveBMP")
+    private void ReceiveBMP(Bitmap bmp)
     {
         DispImageView.setImageBitmap(bmp);
     }
