@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import org.simple.eventbus.EventBus;
@@ -29,6 +30,7 @@ public class DispPhoto_Fragment extends Fragment {
 
     ViewPager viewpager;
     PagerAdapter adapter;
+    Button btn_exit;
 
 
     public DispPhoto_Fragment() {
@@ -42,7 +44,14 @@ public class DispPhoto_Fragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_disp_photo_jh, container, false);
         viewpager = (ViewPager) view.findViewById(R.id.viewpager1);
-
+        btn_exit = view.findViewById(R.id.button_ExitPaly);
+        btn_exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Integer i = JH_App.Grid_Fragment_Value;
+                EventBus.getDefault().post(i, "Return_Back");
+            }
+        });
 
         adapter = new PagerAdapter() {
             @Override

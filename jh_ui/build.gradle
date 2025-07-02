@@ -5,7 +5,8 @@ apply plugin: 'com.android.library'
 group='com.github.joyhonest'
 
 android {
-    compileSdkVersion 33
+    namespace 'com.joyhonest.jh_ui'
+    compileSdkVersion 35
     //buildToolsVersion '29.0.3'
 
     defaultConfig {
@@ -37,8 +38,8 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
@@ -60,5 +61,6 @@ dependencies {
 //1.17  把Eventbus 内置. 2024-0902
 //1.18  把Eventbus 内置 2024-0903
 //1.19  把SDK改为最新版本。
-//git commit -m "1.19" -a
+//1.20  修改是Android SDK35 编译
+//git commit -m "1.20" -a
 //git push -u origin main

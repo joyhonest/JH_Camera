@@ -680,70 +680,58 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
         if (v == Floder_Btn) {
 
+            EventBus.getDefault().post("","btnBrowClicked");
 
-            F_SetNoGsensor();
-            Integer nFragment = JH_Fly_Setting.Brow_Select_Fragment;
-            EventBus.getDefault().post(nFragment, "gotoFragment");
 
 
         }
         if (v == Photo_Record_Start_Btn) {
 
+
             if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0)
                 return;
             if (bPhoto) {
-                F_Photo();
+
+                //F_Photo();
+                EventBus.getDefault().post("","btnPhotoClick");
             } else {
                 if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0) {
                     Log.e("Error:", "Not DispVideo!");
                     return;
                 }
+                EventBus.getDefault().post("","btnRecordClick");
 
-                if ((JH_App.nSdStatus & JH_App.LocalRecording) != 0) {
-                    JH_App.F_PlayStopRecord();
-                    wifination.naStopRecord_All();
-                    Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_record_icon_fly_jh);
-                    // JH_App.F_Save2ToGallery(getActivity(), strRecordFilename,false);
-                } else {
-                    strRecordFilename = JH_App.F_GetSaveName(false);
-                    JH_App.F_PlayStartRecord();
-//                    if(JH_App.nResolution==2)
-//                    {
-//                        wifination.naSetRecordWH(1920,1080);
-//                    }
-//                    else if(JH_App.nResolution==1)
-//                    {
-//                        wifination.naSetRecordWH(1280,720);
-//
-//                    }
-//                    else
-//                    {
-//                        wifination.naSetRecordWH(640,480);
-//                    }
-                    wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if(JH_App.b1080P)
-//                            {
-//                                wifination.naSetRecordWH(1920,1080);
-//                            }
-//                            else
-//                            {
-//                                wifination.naSetRecordWH(-1,-1);
-//                            }
-//                            wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
-//                        }
-//                    }, 800);
-                    Record_Time_TextCtrl.setText("00:00");
-                    Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_recording_icon_fly_jh);
-                }
+
             }
         }
 
     }
 
 
+    public void F_GotoBrow()
+    {
+        F_SetNoGsensor();
+        Integer nFragment = JH_Fly_Setting.Brow_Select_Fragment;
+        EventBus.getDefault().post(nFragment, "gotoFragment");
+    }
+
+
+    public void F_Record()
+    {
+           //if ((JH_App.nSdStatus & JH_App.LocalRecording) != 0)
+            if(wifination.isPhoneRecording())
+           {
+                    JH_App.F_PlayStopRecord();
+                    wifination.naStopRecord_All();
+                    Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_record_icon_fly_jh);
+                } else {
+                    strRecordFilename = JH_App.F_GetSaveName(false);
+                    JH_App.F_PlayStartRecord();
+                    wifination.naStartRecord(strRecordFilename, wifination.TYPE_BOTH_PHONE_SD);
+                    Record_Time_TextCtrl.setText("00:00");
+                    Photo_Record_Start_Btn.setBackgroundResource(R.mipmap.photo_recording_icon_fly_jh);
+                }
+    }
 
 
     public  void F_Photo()
@@ -756,22 +744,6 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         JH_App.bPhone_SNAP = true;
 
         final String str = JH_App.F_GetSaveName(true);
-
-        if ((JH_App.nSdStatus & JH_App.LocalRecording) == 0)
-        {
-//            if(JH_App.nResolution==2)
-//            {
-//                wifination.naSetRecordWH(1920,1080);
-//            }
-//            else if(JH_App.nResolution==1)
-//            {
-//                wifination.naSetRecordWH(1280,720);
-//            }
-//            else
-//            {
-//                wifination.naSetRecordWH(640,480);
-//            }
-        }
 
         wifination.naSnapPhoto(str, wifination.TYPE_BOTH_PHONE_SD);
 

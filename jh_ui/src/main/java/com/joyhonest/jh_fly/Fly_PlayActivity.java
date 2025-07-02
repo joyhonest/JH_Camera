@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentTransaction;
 //import android.support.v4.FragmentManager;
 //import android.support.v4.FragmentTransaction;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 
 import android.content.res.Resources;
@@ -16,6 +18,10 @@ import android.graphics.BitmapFactory;
 
 import android.location.Location;
 
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -152,6 +158,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         JH_App.nAppType = 0;
         JH_App.nResolution = 0;
+        forceSendRequestByWifiData(true,this);
         //wifination.naSetRecordWH(640,480);
         wifination.naSetCmdResType(1);
         wifination.appContext = getApplicationContext();
@@ -167,36 +174,21 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             JH_App.F_CreateLocalFlyDefalutDir();
         }
 
-        if(Build.VERSION.SDK_INT>=33)
-        //if(true)
-        {
-             mAsker = new PermissionAsker(10, new Runnable() {
-                    @Override
-                    public void run() {
-                        JH_App.F_CreateLocalFlyDefalutDir();
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        F_DispAlert();
-                    }
-                }).askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO);
-        }
-        else
-        {
-            
-            mAsker = new PermissionAsker(10, new Runnable() {
-                    @Override
-                    public void run() {
-                        JH_App.F_CreateLocalFlyDefalutDir();
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        F_DispAlert();
-                    }
-                }).askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO);
-        }
+        mAsker = new PermissionAsker(10, new Runnable() {
+            @Override
+            public void run() {
+                JH_App.F_CreateLocalFlyDefalutDir();
+                F_DoActive();
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                F_DispAlert();
+            }
+        });//.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO);
+
+
+
 
         DispImageView.post(new Runnable() {
             @Override
@@ -219,10 +211,94 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
 
 
+    int nDoActive = -1;
+
+
+
+    private void F_DoActive()
+    {
+            if(nDoActive == 0)
+            {
+                if (mActiveFragment == flyPlayFragment)
+                {
+                    flyPlayFragment.F_Photo();
+                }
+            }
+            if(nDoActive == 1)
+            {
+                if (mActiveFragment == flyPlayFragment)
+                {
+                    flyPlayFragment.F_Record();
+                }
+            }
+            if(nDoActive == 2)
+            {
+                if (mActiveFragment == flyPlayFragment)
+                {
+                    flyPlayFragment.F_GotoBrow();
+                }
+            }
+            nDoActive = -1;
+    }
+    private void F_Check(int n)
+    {
+        nDoActive = n;
+
+        if(Build.VERSION.SDK_INT>=35)
+        {
+            if(n==1) {
+                mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED");
+            }
+            else
+            {
+                mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED");
+            }
+        }
+        else if(Build.VERSION.SDK_INT>=33)
+        {
+            if( n==1) {
+                mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.RECORD_AUDIO);
+            }
+            else
+            {
+                mAsker.askPermission(this, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES);
+            }
+        }
+        else
+        {
+
+            if(n==1) {
+                mAsker.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO);
+            }
+            else
+            {
+                mAsker.askPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+
+        }
+    }
+
+
     private void F_DispAlert() {
+
+        String str1 = "This app requires access to external storage permissions";
+        String str2 = " and record audio permissions";
+        if(Build.VERSION.SDK_INT>=35)
+        {
+            str1 =  "This app requires access to read system images and videos and select all";
+        }
+        else if(Build.VERSION.SDK_INT>=33)
+        {
+            str1 = "This app requires permission to read system images and videos";
+        }
+        if(nDoActive == 1)
+        {
+            str1 = str1 + str2;
+        }
+
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle("Waring")
-                .setMessage("The necessary permission denied, the application exit")
+                .setMessage(str1)
                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -246,7 +322,9 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                 JH_App.nResolution = cmd[2];
                 if(!wifination.isPhoneRecording()) {
                     if (JH_App.nResolution == 2) {
-                        wifination.naSetRecordWH(1920, 1080);
+                        if(wifination.CheckResolutionSupport(1920,1080)) {
+                            wifination.naSetRecordWH(1920, 1080);
+                        }
                     } else if (JH_App.nResolution == 1) {
                         wifination.naSetRecordWH(1280, 720);
                     } else {
@@ -1819,6 +1897,28 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
            }
     }
 
+    @Subscriber(tag = "btnPhotoClick")
+     private void onBtnPhotoClick(String str)
+    {
+        Log.e("TAG","btnPhotoClicked! ");
+        F_Check(0);
+
+    }
+
+    @Subscriber(tag = "btnRecordClick")
+    private void onBtnRecordClick(String str)
+    {
+        Log.e("TAG","btnRecordClick! ");
+        F_Check(1);
+    }
+    @Subscriber(tag ="btnBrowClicked")
+    private void onBtnBrowClicked(String str)
+    {
+        F_Check(2);
+    }
+
+
+
     @Subscriber(tag = "key_Press")
     private  void KeyPress(Integer nkeya)
     {
@@ -1899,5 +1999,82 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+
+    public static  void forceSendRequestByWifiData(final boolean  b, Activity activity) {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) ( activity.getApplication().getSystemService(Context.CONNECTIVITY_SERVICE));;
+
+        {
+
+            NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+            // 设置指定的网络传输类型(蜂窝传输) 等于手机网络
+            builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+
+            // 设置感兴趣的网络功能
+            // builder.addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+
+            // 设置感兴趣的网络：计费网络
+            // builder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+
+            NetworkRequest request = builder.build();
+            ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onUnavailable() {
+                    super.onUnavailable();
+
+                }
+
+
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    super.onAvailable(network);
+                    if(b)
+                    {
+                        Log.i("test", "已根据功能和传输类型找到合适的网络");
+
+                        // 可以通过下面代码将app接下来的请求都绑定到这个网络下请求
+
+                  if (Build.VERSION.SDK_INT >= 23) {
+                     connectivityManager.bindProcessToNetwork(network);
+                  } else {
+                     // 23后这个方法舍弃了
+                     ConnectivityManager.setProcessDefaultNetwork(network);
+                  }
+
+                        // 也可以在将来某个时间取消这个绑定网络的设置
+                        // if (Build.VERSION.SDK_INT >= 23) {
+                        //      onnectivityManager.bindProcessToNetwork(null);
+                        //} else {
+                        //     ConnectivityManager.setProcessDefaultNetwork(null);
+                        //}
+
+                        // 只要一找到符合条件的网络就注销本callback
+                        // 你也可以自己进行定义注销的条件
+
+                    }
+                    else
+                    {
+
+                      if (Build.VERSION.SDK_INT >= 23) {
+                         connectivityManager.bindProcessToNetwork(null);
+                      } else {
+                         ConnectivityManager.setProcessDefaultNetwork(null);
+                      }
+                    }
+                    connectivityManager.unregisterNetworkCallback(this);
+                }
+            };
+            if (Build.VERSION.SDK_INT >= 26)
+            {
+                connectivityManager.requestNetwork(request, callback,200);
+            }
+            else
+            {
+                connectivityManager.requestNetwork(request, callback);
+            }
+
+        }
+    }
 
 }
