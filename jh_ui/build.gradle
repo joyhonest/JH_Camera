@@ -38,8 +38,8 @@ android {
         abortOnError false
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -62,5 +62,6 @@ dependencies {
 //1.18  把Eventbus 内置 2024-0903
 //1.19  把SDK改为最新版本。
 //1.20  修改是Android SDK35 编译
-//git commit -m "1.20" -a
+//1.21  修改是Android SDK35 编译
+//git commit -m "1.21" -a
 //git push -u origin main

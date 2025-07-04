@@ -460,8 +460,8 @@ public class GP4225_Device {
                 case 0x0005:  //返回SSID
                     if(n_len>0)
                     {
-                        byte da[] = new byte[n_len+1];
-                        da[n_len]=0;
+                        byte[] da = new byte[n_len];
+                        //da[n_len]=0;
                         System.arraycopy(data, 10, da, 0,n_len);
                         try {
                             String str = new String(da);
@@ -474,8 +474,24 @@ public class GP4225_Device {
 
                     }
                     break;
-//                case 0x0006:
-//                    break;
+                case 0x0006:   //新版获取wifiPassword
+                {
+                     {
+                        byte[]  da = new byte[n_len];
+                        //da[n_len]=0;
+                        System.arraycopy(data, 10, da, 0,n_len);
+                        try {
+                            String str = new String(da);
+                            EventBus.getDefault().post(str,"onGetWiFiPassword");
+                        }
+                        catch (Exception ignored) {
+                            ;
+                        }
+
+                    }
+
+                }
+                    break;
                 case 0x0007: //WifiChannel
                 {
                     byte a = data[10];
@@ -874,6 +890,14 @@ public class GP4225_Device {
                 }
                 break;
 
+
+                case 0x0033:
+                {
+                    Integer n = data[10]+(data[11]<<8);  //data[10]=密码设置 UI 显示 data[11]=热点设置 UI 显示
+                    EventBus.getDefault().post(n, "onGetAPP_Special_Function");
+                }
+                break;
+
                 case 0x0050:
                 {
                     byte[] aa = null;
@@ -884,6 +908,14 @@ public class GP4225_Device {
                     }
                 }
                 break;
+                case 0x0055:  //TFT是否横竖屏显示。2025-0627 和凡昆讨论确定
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;  //0 横屏， 1 竖屏
+                    EventBus.getDefault().post(aa, "onGetTftOrientation");
+                }
+                break;
+
                 default:
                     bOK = false;
                     break;
