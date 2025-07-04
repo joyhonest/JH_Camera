@@ -2,7 +2,8 @@ apply plugin: 'com.android.library'
 //apply plugin: 'com.novoda.bintray-release'
 //apply plugin: 'com.github.panpf.bintray-publish'
 //apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.joyhonest'
+//group='com.github.joyhonest'
+apply plugin: 'maven-publish'
 
 android {
     namespace 'com.joyhonest.jh_ui'
@@ -41,7 +42,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
+
+
 }
+
+
+
+
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -54,6 +70,21 @@ dependencies {
     compileOnly 'org.tensorflow:tensorflow-android:1.13.1'
 }
 
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.joyhonest'
+            artifactId = 'JH_Camera'
+            version = '1.22'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
+
 //1.09
 //1.11  添加SymaGo 如果摄像头的分辨率为 640 *360 就改为 640 * 480；
 //1.12  添加1280 * 720 的支持
@@ -62,6 +93,6 @@ dependencies {
 //1.18  把Eventbus 内置 2024-0903
 //1.19  把SDK改为最新版本。
 //1.20  修改是Android SDK35 编译
-//1.21  修改是Android SDK35 编译
+//1.22  修改是Android SDK35 编译
 //git commit -m "1.21" -a
 //git push -u origin main
