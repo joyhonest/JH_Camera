@@ -73,6 +73,8 @@ import java.util.Locale;
 
 public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
+
+    private final String TAG = "Fly_PlayActivity";
     private  int nDispStyle = 0;
 
     public static boolean bTestMode = false;
@@ -139,6 +141,16 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             SystemClock.sleep(20);
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
             SystemClock.sleep(20);
+
+            bChangedPass = false;
+
+
+
+            wifination.naGetAPP_Special_Function();
+            wifination.naGetAPP_Special_Function();
+            wifination.naGetAPP_Special_Function();
+            wifination.naGetAPP_Special_Function();
+
         }
     };
     private PermissionAsker mAsker;
@@ -168,6 +180,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         JH_App.nType = JH_App.nStyle_fly;
         JH_App.F_InitMusic();
         wifination.naSetRevBmp(true);
+
+
         F_Init();
         if(JH_App.isAndroidQ())
         {
@@ -1900,7 +1914,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "btnPhotoClick")
      private void onBtnPhotoClick(String str)
     {
-        Log.e("TAG","btnPhotoClicked! ");
+        Log.e(TAG,"btnPhotoClicked! ");
         F_Check(0);
 
     }
@@ -1908,7 +1922,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "btnRecordClick")
     private void onBtnRecordClick(String str)
     {
-        Log.e("TAG","btnRecordClick! ");
+        Log.e(TAG,"btnRecordClick! ");
         F_Check(1);
     }
     @Subscriber(tag ="btnBrowClicked")
@@ -2076,5 +2090,70 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
         }
     }
+
+    @Subscriber(tag="onGetAPP_Special_Function")
+    private void  onGetAPP_Special_Function(int n)
+    {
+        boolean bIsCanchanged = ((n &0x01) !=0);
+        if(bIsCanchanged)
+        {
+            if (mActiveFragment == flyPlayFragment) {
+
+                 flyPlayFragment.ShowChangedPassBtn(bIsCanchanged);
+            }
+        }
+        wifination.naGetWifiPasswordNewVer();
+        wifination.naGetWifiPasswordNewVer();
+        wifination.naGetWifiPasswordNewVer();
+        wifination.naGetWifiPasswordNewVer();
+
+    }
+
+
+    boolean bChangedPass = false;
+    String  strSetPass="";
+  @Subscriber(tag = "hasChangedPasswrod")
+    private void hasChangedPasswrod(String str)
+  {
+      bChangedPass = true;
+      strSetPass = str;
+      wifination.naGetWifiPasswordNewVer();
+
+  }
+
+
+  static String sPassword="";
+  @Subscriber(tag = "onGetWiFiPassword")
+
+  private  void     onGetWiFiPassword(String str)
+  {
+
+      Log.e(TAG,"password = "+str);
+      sPassword = str;
+      if(bChangedPass)
+      {
+          bChangedPass = false;
+          if(strSetPass.equals(str))
+          {
+              if (mActiveFragment == flyPlayFragment) {
+                flyPlayFragment.F_DispMsgView(R.string.changeOK,true);
+              }
+
+              Log.e("tag","changed ok");
+          }
+          else
+          {
+              if (mActiveFragment == flyPlayFragment) {
+                  flyPlayFragment.F_DispMsgView(R.string.changeError,true);
+              }
+              Log.e("tag","changed error");
+          }
+          strSetPass = "";
+      }
+
+  }
+
+
+
 
 }

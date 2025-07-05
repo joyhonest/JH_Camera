@@ -14,7 +14,14 @@
     <string name="Sure_you_want_to_delete">Sure you delete files?</string>
     <string name="Cancel">Cancel</string>
     <string name="OK">OK</string>
-
+    <string name="old_password">inpput old password</string>
+    <string name="new_password">input new password</string>
+    <string name="new_password_again">input new password again</string>
+    <string name="password_is_not_equals">The new password input does not match</string>
+    <string name="oldpasswrod_error">Old password input does not match</string>
+    <string name="changeOK">Password changed successfully, \nplease restart the device</string>
+    <string name="changeError">Password modification unsuccessful</string>
+    <string name="oldpasswrod_is_newpassword">The new password must be different from the old password</string>
 
 
 </resources>

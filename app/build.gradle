@@ -41,7 +41,7 @@ dependencies {
 
     //implementation project(':jh_ui')
     //implementation 'com.github.joyhonest:JH_Camera:1.19'
-   //implementation 'com.Joyhonest:JH_Camera:1.4.8'
+   //implementation 'com.github.joyhonest:JH_Camera:1.22'
     implementation project(path: ':jh_ui')
 
 }

@@ -4,14 +4,19 @@ package com.joyhonest.jh_fly;
 import android.animation.ObjectAnimator;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -43,6 +48,8 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
     private Button Return_Btn1;
     private Button OneKeyReturn_Btn;
 
+    private Button Btn_changPass;
+
     private Button Speed_Btn;
     private Button Adj_Btn;
     private Button VR_Btn;
@@ -58,6 +65,9 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
 
     private Button button_more_b;
+
+
+    private View View_ChangedPassword;
     //private Button More_Btn;
 
 
@@ -94,6 +104,20 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
     private RelativeLayout photo_mask;
 
 
+    private Button btn_ok;
+    private Button btn_Cancel;
+
+    private EditText oldPass;
+    private EditText newPass;
+    private EditText newPass2;
+
+
+    private TextView msgTxtView;
+    private  Button mstBtnOk;
+    private ConstraintLayout msgView;
+
+
+
     //  private RelativeLayout  LayoutMask;
     //  private Button           return_btn_b;
 
@@ -116,10 +140,17 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
         view.findViewById(R.id.rooglayout).setBackgroundColor(0x00010000);
 
-
+        Btn_changPass = view.findViewById(R.id.btn_changPass);
         button_more_b = (Button) view.findViewById(R.id.button_more_b);
 
         WifiSingle = (ImageView) view.findViewById(R.id.WifiSingle);
+        btn_ok = view.findViewById(R.id.btn_changed_ok);
+        btn_Cancel = view.findViewById(R.id.btn_changed_cancel);
+
+        msgTxtView = view.findViewById(R.id.msg_text);
+
+        mstBtnOk = view.findViewById(R.id.btn_msg);
+        msgView = view.findViewById(R.id.msgView);
 
 
         //  LayoutMask = (RelativeLayout)view.findViewById(R.id.LayoutMask);
@@ -162,11 +193,15 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         Return_Btn1 = (Button) view.findViewById(R.id.return_btn1);
         Return_Btn1.setVisibility(View.INVISIBLE);
 
+
         //OneKeyReturn_Btn = (Button)view.findViewById(R.id.button05);
 
         Speed_Btn = (Button) view.findViewById(R.id.button05);
         Adj_Btn = (Button) view.findViewById(R.id.button06);
         Gsensor_Btn = (Button) view.findViewById(R.id.button07);
+        View_ChangedPassword = view.findViewById(R.id.View_ChangedPassword);
+
+
 
         Path_Btn = (Button) view.findViewById(R.id.button08);
         VR_Btn = (Button) view.findViewById(R.id.button09);
@@ -176,6 +211,10 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
         StopFly_Btn = (Button) view.findViewById(R.id.button10);
         UpDn_Btn = (Button) view.findViewById(R.id.button11);
+
+        oldPass = view.findViewById(R.id.oldPass);
+        newPass = view.findViewById(R.id.newPass);
+        newPass2  = view.findViewById(R.id.newPass2);
 
         //  More_Btn = (Button) view.findViewById(R.id.button_more);
         button_leftRight.F_SetMenu(true);
@@ -189,6 +228,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         Return_Btn.setOnClickListener(this);
         Return_Btn1.setOnClickListener(this);
         button_more_b.setOnClickListener(this);
+        mstBtnOk.setOnClickListener(this);
 
         StopFly_Btn.setOnClickListener(this);
 
@@ -204,9 +244,14 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         HeadLess_Btn.setOnClickListener(this);
         Menu_Layout.setOnClickListener(this);
 
+        Btn_changPass.setOnClickListener(this);
+
         //  LayoutMask.setOnClickListener(this);
         //  return_btn_b.setOnClickListener(this);
         //   bMore = false;
+
+        btn_ok.setOnClickListener(this);
+        btn_Cancel.setOnClickListener(this);
 
 
         F_DispUI();
@@ -248,6 +293,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         UpDn_Btn.setAlpha(nAlpha);
         WifiSingle.setAlpha(nAlpha);
         myControl.F_Invalidate();
+        Btn_changPass.setAlpha(nAlpha);
 
     }
 
@@ -509,8 +555,64 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
     boolean bTest = true;
     int nRota = 0;
 
+
     @Override
     public void onClick(View v) {
+        if(mstBtnOk == v)
+        {
+            msgView.setVisibility(View.GONE);
+        }
+        if(v == btn_ok)
+        {
+             String oldpassstr = oldPass.getText().toString();
+             String newPassstr = newPass.getText().toString();
+            String newPassstr2 = newPass2.getText().toString();
+
+            oldpassstr = oldpassstr.replaceAll("\\s", "");
+            newPassstr = newPassstr.replaceAll("\\s", "");
+            newPassstr2 = newPassstr2.replaceAll("\\s", "");
+             if(oldpassstr.isEmpty() || newPassstr.isEmpty() || newPassstr2.isEmpty())
+             {
+                 return;
+             }
+
+             if(newPassstr2.equals(newPassstr))
+             {
+                 if(oldpassstr.equals(newPassstr ))
+                 {
+                     F_DispMsgView(R.string.oldpasswrod_is_newpassword,true);
+                 }
+                 else
+                 {
+                     if(Fly_PlayActivity.sPassword.equals(oldpassstr)) {
+                         wifination.naSetWifiPasswordNewVer(newPassstr);
+                         EventBus.getDefault().post(newPassstr, "hasChangedPasswrod");
+                     }
+                     else
+                     {
+                         F_DispMsgView(R.string.oldpasswrod_error,true);
+                     }
+                 }
+
+             }
+             else
+             {
+                 F_DispMsgView(R.string.password_is_not_equals,true);
+             }
+            View_ChangedPassword.setVisibility(View.GONE);
+        }
+        if(v == btn_Cancel)
+        {
+            View_ChangedPassword.setVisibility(View.GONE);
+        }
+        if(v == Btn_changPass)
+        {
+            oldPass.setText("");
+            newPass.setText("");
+            newPass2.setText("");
+            F_DispChangedPassword();
+            return;
+        }
         if (v != Return_Btn) {
             if (JH_App.bFlyDisableAll) {
                 JH_App.bFlyDisableAll = false;
@@ -1327,5 +1429,52 @@ Data9：Data0- Data8异或后，再加0X55
         // wifination.naSentCmd(fly_cmd.cmd, 15);
         //  Log.e("SentCmd","Sent OK!");
         */
+    }
+
+    public void ShowChangedPassBtn(boolean b)
+    {
+        if(b)
+        {
+            Btn_changPass.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            Btn_changPass.setVisibility(View.GONE);
+        }
+    }
+
+    private void F_DispChangedPassword()
+    {
+        View_ChangedPassword.setVisibility(View.VISIBLE);
+    }
+    public void F_DispMsgView(int sMsgID,boolean bDispButton)
+    {
+         String str = getString(sMsgID);
+         F_DispMsgView(str,bDispButton);
+    }
+    private void F_DispMsgView(String sMsg,boolean bDispButton)
+    {
+            msgTxtView.setText(sMsg);
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)msgTxtView.getLayoutParams();
+            if(bDispButton)
+            {
+                mstBtnOk.setVisibility(View.VISIBLE);
+                params.verticalBias=0.35f;
+            }
+            else
+            {
+                mstBtnOk.setVisibility(View.INVISIBLE);
+                params.verticalBias=0.5f;
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mstBtnOk.setVisibility(View.INVISIBLE);
+                    }
+                },1000);
+            }
+            msgTxtView.setLayoutParams(params);
+        msgView.setVisibility(View.VISIBLE);
+
+
     }
 }

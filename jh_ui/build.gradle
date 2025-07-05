@@ -94,5 +94,6 @@ publishing {
 //1.19  把SDK改为最新版本。
 //1.20  修改是Android SDK35 编译
 //1.22  修改是Android SDK35 编译
-//git commit -m "1.21" -a
+//1.23  Fly添加修改wifi密码
+//git commit -m "1.23" -a
 //git push -u origin main
