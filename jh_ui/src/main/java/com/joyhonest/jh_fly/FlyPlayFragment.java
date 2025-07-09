@@ -561,6 +561,11 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         if(mstBtnOk == v)
         {
             msgView.setVisibility(View.GONE);
+            if(bNeedDoOK)
+            {
+                EventBus.getDefault().post("","onNeedDoOK");
+                bNeedDoOK = false;
+            }
         }
         if(v == btn_ok)
         {
@@ -580,7 +585,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
              {
                  if(oldpassstr.equals(newPassstr ))
                  {
-                     F_DispMsgView(R.string.oldpasswrod_is_newpassword,true);
+                     F_DispMsgView(R.string.oldpasswrod_is_newpassword,true,false);
                  }
                  else
                  {
@@ -590,14 +595,14 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
                      }
                      else
                      {
-                         F_DispMsgView(R.string.oldpasswrod_error,true);
+                         F_DispMsgView(R.string.oldpasswrod_error,true,false);
                      }
                  }
 
              }
              else
              {
-                 F_DispMsgView(R.string.password_is_not_equals,true);
+                 F_DispMsgView(R.string.password_is_not_equals,true,false);
              }
             View_ChangedPassword.setVisibility(View.GONE);
         }
@@ -846,6 +851,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         JH_App.bPhone_SNAP = true;
 
         final String str = JH_App.F_GetSaveName(true);
+
 
         wifination.naSnapPhoto(str, wifination.TYPE_BOTH_PHONE_SD);
 
@@ -1443,17 +1449,21 @@ Data9：Data0- Data8异或后，再加0X55
         }
     }
 
+
+    private  boolean bNeedDoOK = false;
     private void F_DispChangedPassword()
     {
         View_ChangedPassword.setVisibility(View.VISIBLE);
     }
-    public void F_DispMsgView(int sMsgID,boolean bDispButton)
+    public void F_DispMsgView(int sMsgID,boolean bDispButton,boolean b)
     {
+
          String str = getString(sMsgID);
-         F_DispMsgView(str,bDispButton);
+         F_DispMsgView(str,bDispButton,b);
     }
-    private void F_DispMsgView(String sMsg,boolean bDispButton)
+    private void F_DispMsgView(String sMsg,boolean bDispButton,boolean b)
     {
+            bNeedDoOK = b;
             msgTxtView.setText(sMsg);
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams)msgTxtView.getLayoutParams();
             if(bDispButton)

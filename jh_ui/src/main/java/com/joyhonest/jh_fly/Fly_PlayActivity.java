@@ -117,6 +117,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
     private Fragment mActiveFragment = null;
 
+
+
     private Runnable openRunnable = new Runnable() {
         @Override
         public void run() {
@@ -147,9 +149,13 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
 
             wifination.naGetAPP_Special_Function();
+            SystemClock.sleep(20);
             wifination.naGetAPP_Special_Function();
+            SystemClock.sleep(20);
             wifination.naGetAPP_Special_Function();
+            SystemClock.sleep(20);
             wifination.naGetAPP_Special_Function();
+            SystemClock.sleep(20);
 
         }
     };
@@ -251,6 +257,10 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                 {
                     flyPlayFragment.F_GotoBrow();
                 }
+            }
+            if(nDoActive == 3)  //修改密码成功，
+            {
+                F_SavePasswordToPic();
             }
             nDoActive = -1;
     }
@@ -2091,20 +2101,28 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+
+    private int nDispPassword = 0;
+
     @Subscriber(tag="onGetAPP_Special_Function")
     private void  onGetAPP_Special_Function(int n)
     {
         boolean bIsCanchanged = ((n &0x01) !=0);
         if(bIsCanchanged)
         {
-            if (mActiveFragment == flyPlayFragment) {
-
-                 flyPlayFragment.ShowChangedPassBtn(bIsCanchanged);
-            }
+            nDispPassword |=0x01;
         }
+
         wifination.naGetWifiPasswordNewVer();
+        SystemClock.sleep(20);
         wifination.naGetWifiPasswordNewVer();
+        SystemClock.sleep(20);
         wifination.naGetWifiPasswordNewVer();
+        SystemClock.sleep(20);
+        wifination.naGetWifiPasswordNewVer();
+        SystemClock.sleep(20);
+        wifination.naGetWifiPasswordNewVer();
+        SystemClock.sleep(20);
         wifination.naGetWifiPasswordNewVer();
 
     }
@@ -2123,12 +2141,18 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
 
   static String sPassword="";
+  String passwrodFile = "";
   @Subscriber(tag = "onGetWiFiPassword")
 
   private  void     onGetWiFiPassword(String str)
   {
+      nDispPassword |=0x02;
+      if((nDispPassword & 0x03) == 0x03) {
+          if (mActiveFragment == flyPlayFragment) {
+              flyPlayFragment.ShowChangedPassBtn(true);
+          }
+      }
 
-      Log.e(TAG,"password = "+str);
       sPassword = str;
       if(bChangedPass)
       {
@@ -2136,24 +2160,41 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
           if(strSetPass.equals(str))
           {
               if (mActiveFragment == flyPlayFragment) {
-                flyPlayFragment.F_DispMsgView(R.string.changeOK,true);
+                  passwrodFile = JH_App.F_GetSaveName(true);
+                  flyPlayFragment.F_DispMsgView(R.string.changeOK,true,true);
               }
 
-              Log.e("tag","changed ok");
           }
           else
           {
               if (mActiveFragment == flyPlayFragment) {
-                  flyPlayFragment.F_DispMsgView(R.string.changeError,true);
+                  flyPlayFragment.F_DispMsgView(R.string.changeError,true,false);
               }
-              Log.e("tag","changed error");
           }
           strSetPass = "";
       }
 
   }
 
+  @Subscriber(tag = "onNeedDoOK")
+  private void onNeedDoOK(String str)
+  {
+      F_Check(3);
+  }
 
+
+  private void F_SavePasswordToPic()
+  {
+      //final String filePthaname = JH_App.F_GetSaveName(true);
+      if(!passwrodFile.isEmpty())
+      {
+          boolean b = TextToImageConverter.saveTextAsImage("new password: " + sPassword, passwrodFile);
+          if (b) {
+              JH_App.F_Save2ToGallery(passwrodFile, true);
+          }
+          passwrodFile = "";
+      }
+  }
 
 
 }

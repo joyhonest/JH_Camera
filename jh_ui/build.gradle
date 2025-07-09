@@ -76,7 +76,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.joyhonest'
             artifactId = 'JH_Camera'
-            version = '1.22'
+            version = '1.0'
 
             afterEvaluate {
                 from components.release
@@ -94,6 +94,6 @@ publishing {
 //1.19  把SDK改为最新版本。
 //1.20  修改是Android SDK35 编译
 //1.22  修改是Android SDK35 编译
-//1.23  Fly添加修改wifi密码
-//git commit -m "1.23" -a
+//1.25  Fly添加修改wifi密码
+//git commit -m "1.25" -a
 //git push -u origin main

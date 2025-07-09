@@ -9,7 +9,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 35
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
             abiFilters 'armeabi-v7a','arm64-v8a'
@@ -41,7 +41,7 @@ dependencies {
 
     //implementation project(':jh_ui')
     //implementation 'com.github.joyhonest:JH_Camera:1.19'
-   //implementation 'com.github.joyhonest:JH_Camera:1.22'
+   //implementation 'com.github.joyhonest:JH_Camera:1.23'
     implementation project(path: ':jh_ui')
 
 }
