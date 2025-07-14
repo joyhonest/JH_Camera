@@ -343,7 +343,7 @@
         android:layout_centerInParent="true"
         android:elevation="100dp"
         android:id="@+id/View_ChangedPassword"
-        android:visibility="gone"
+        android:visibility="visible"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="400dp"
