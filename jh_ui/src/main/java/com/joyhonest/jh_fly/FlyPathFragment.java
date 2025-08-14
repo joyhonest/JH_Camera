@@ -66,6 +66,7 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
     public FlyPathFragment() {
         // Required empty public constructor
     }
+    private Handler sentHander;
 
 
     @Override
@@ -74,6 +75,7 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fly_path, container, false);
 
+        sentHander = new Handler(((Fly_PlayActivity)getActivity()).thread.getLooper());
         view.findViewById(R.id.rooglayout).setBackgroundColor(0x00010000);
         photo_mask = (RelativeLayout) view.findViewById(R.id.photo_mask);
         photo_mask.setVisibility(View.GONE);
@@ -147,6 +149,7 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v == Return_Btn) {
             F_StopPaht();
+
             EventBus.getDefault().post("abc", "GoTo_Main");
         }
         if (v == Open_Close_eye_Btn) {
@@ -155,6 +158,8 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
         }
         if (v == StopFly_Btn) {
             JH_App.bStop = true;
+            JH_App.bUp = false;
+            JH_App.bDn = false;
             StopFly_Btn.setBackgroundResource(R.mipmap.stop_sel_fly_jh);
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -328,7 +333,8 @@ public class FlyPathFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    private Handler sentHander = new Handler();
+
+
     private Runnable sentRunnable = new Runnable() {
         @Override
         public void run() {
@@ -507,7 +513,7 @@ Data9：Data0- Data8异或后，再加0X55
             cmd[9] = (byte) (((cmd[0] ^ cmd[1] ^ cmd[2] ^ cmd[3] ^ cmd[4] ^ cmd[5] ^ cmd[6] ^ cmd[7] ^ cmd[8]) & 0xFF) + 0x55);
 
             wifination.naSentCmd(cmd, 10);
-            //   Log.e("Cmd:  ","Sent Path  X1=" +X1+" Y1="+Y1+" X2="+X2+" Y2="+Y2);
+//               Log.e("Cmd:  ","Sent Path  X1=" +X1+" Y1="+Y1+" X2="+X2+" Y2="+Y2);
             /*
             if(Y2!=0x80 || X2!=0x80) {
                 String str = String.format("X2=%02X  Y2=%02X", X2, Y2);

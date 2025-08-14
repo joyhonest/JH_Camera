@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
@@ -41,7 +42,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
     private Button Fly_Camera_Btn;
     private Button Photo_Record_Select_Btn;
     public MySwitch myswitch;
-    private MySwitch button_leftRight;
+    public MySwitch button_leftRight;
     private Button Photo_Record_Start_Btn;
     private Button Floder_Btn;
     private Button Return_Btn;
@@ -124,6 +125,9 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
     private boolean bTestFlip = false;
 
+    //HandlerThread thread;
+    private Handler sentHander;// = new Handler();
+
     public FlyPlayFragment() {
         // Required empty public constructor
     }
@@ -139,6 +143,10 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         photo_mask.setVisibility(View.GONE);
 
         view.findViewById(R.id.rooglayout).setBackgroundColor(0x00010000);
+
+//        thread = new HandlerThread("SyMaTY_1");
+//        thread.start(); //创建一个HandlerThread并启动它
+        sentHander = new Handler(((Fly_PlayActivity)getActivity()).thread.getLooper());
 
         Btn_changPass = view.findViewById(R.id.btn_changPass);
         button_more_b = (Button) view.findViewById(R.id.button_more_b);
@@ -372,6 +380,14 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
     }
 
+
+
+    public void F_QutThread()
+    {
+
+        sentHander.removeCallbacksAndMessages(null);
+
+    }
     public void F_DispGSensorIcon() {
 
         if (Gsensor_Btn != null) {
@@ -688,7 +704,9 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
         }
 
         if (v == UpDn_Btn) {
-
+            if(UpDn_Btn.getAlpha() <1.0f)
+                return;
+            JH_App.bStop = false;
             JH_App.bFlying = !JH_App.bFlying;
             if (JH_App.bFlying) {
                 JH_App.bUp = true;
@@ -706,20 +724,8 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
                     JH_App.bUp = false;
                     JH_App.bDn = false;
                     UpDn_Btn.setAlpha(1.0f);
-                    /*
-                    if((JH_App.nSdStatus & JH_App.LocalRecording)!=0)
-                    {
-                        UpDn_Btn.setBackgroundResource(R.mipmap.keyup_dn_fly_jh);
-                    }
-                    else
-                    {
-                       // UpDn_Btn.setBackgroundResource(R.mipmap.keyup_dn_fly_jh_b);
-                        UpDn_Btn.setBackgroundResource(R.mipmap.keyup_dn_fly_jh);
-                    }
-                    */
-
                 }
-            }, 500);
+            }, 600);
         }
         if (v == Path_Btn) {
             F_SetNoGsensor();
@@ -798,15 +804,28 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
             if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0)
                 return;
             if (bPhoto) {
-
-                //F_Photo();
                 EventBus.getDefault().post("","btnPhotoClick");
             } else {
                 if ((JH_App.nSdStatus & JH_App.Status_Connected) == 0) {
-                    Log.e("Error:", "Not DispVideo!");
                     return;
                 }
-                EventBus.getDefault().post("","btnRecordClick");
+
+                if(wifination.isPhoneRecording()) {
+                    Photo_Record_Start_Btn.setEnabled(true);
+                    EventBus.getDefault().post("", "btnRecordClick");
+                }
+                else
+                {
+                    Photo_Record_Start_Btn.setEnabled(false);
+                    EventBus.getDefault().post("", "btnRecordClick");
+                    recordCheckHandler.removeCallbacksAndMessages(null);
+                    recordCheckHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Photo_Record_Start_Btn.setEnabled(true);
+                        }
+                    }, 2000);
+                }
 
 
             }
@@ -814,6 +833,8 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
     }
 
+
+    Handler recordCheckHandler = new Handler(Looper.getMainLooper());
 
     public void F_GotoBrow()
     {
@@ -1088,8 +1109,11 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
 
 
     private int nTestTemp;
-    private Handler sentHander = new Handler();
-    private Runnable sentRunnable = new Runnable() {
+
+
+
+
+    private final Runnable sentRunnable = new Runnable() {
         @Override
         public void run() {
             nTestTemp++;
@@ -1099,6 +1123,7 @@ public class FlyPlayFragment extends Fragment implements View.OnClickListener {
     };
 
     byte[] cmd = new byte[20];
+    long nPreT = -1;
 
     private  void F_TestGpsCmd()
     {
@@ -1245,7 +1270,7 @@ Data9：Data0- Data8异或后，再加0X55
         int da = Y_ADJ2 - 0x80;
         if (da < 0)               // 后调
         {
-            da = 0 - da;
+            da = -da;
             da += 0x20;
             if (da > 0x3F) {
                 da = 0x3F;
@@ -1260,14 +1285,14 @@ Data9：Data0- Data8异或后，再加0X55
 
         cmd[5] = (byte) da;       //前后微调
         if (JH_App.bHiSpeed)
-            cmd[5] |= 0x80;          //高速模式
+            cmd[5] |= (byte)0x80;          //高速模式
 
         //cmd[5] |= 0x40;
 
 
         da = X_ADJ1 - 0x80;          //旋转微调
         if (da < 0) {
-            da = 0 - da;
+            da = -da;
             if (da > 0x1F) {
                 da = 0x1F;
             }
@@ -1286,7 +1311,7 @@ Data9：Data0- Data8异或后，再加0X55
         da = X_ADJ2 - 0x80;
         if (da < 0) {
 
-            da = 0 - da;
+            da = -da;
             if (da > 0x1F) {
                 da = 0x1F;
             }
@@ -1304,7 +1329,7 @@ Data9：Data0- Data8异或后，再加0X55
             cmd[7] |= 0x40;
         }
         if (JH_App.bHeadLess) {
-            cmd[7] |= 0x80;
+            cmd[7] |=(byte) 0x80;
         }
 
         cmd[8] = 0;
@@ -1321,7 +1346,23 @@ Data9：Data0- Data8异或后，再加0X55
         }
         cmd[9] = (byte) (((cmd[0] ^ cmd[1] ^ cmd[2] ^ cmd[3] ^ cmd[4] ^ cmd[5] ^ cmd[6] ^ cmd[7] ^ cmd[8]) & 0xFF) + 0x55);
         wifination.naSentCmd(cmd, 10);
-        //  Log.e("Cmd:  ","Sent NromalComd  X1=" +X1+" Y1="+Y1+" X2="+X2+" Y2="+Y2+"  temp="+nTestTemp);
+//        if(JH_App.bUp)
+//        {
+//            Log.e("Cmd:  ", "UP");
+//        }
+//        if(JH_App.bDn || JH_App.bStop) {
+//            Log.e("Cmd:  ", "DN"+JH_App.bDn +"   "+JH_App.bStop);
+//        }
+
+//        long  nCurrent = System.currentTimeMillis();
+//        long nDa = nCurrent - nPreT;
+//     //   if(nDa>40)
+//        {
+//            Log.e("ABC","ntime = "+nDa);
+//        }
+//
+//        nPreT = nCurrent;
+        //Log.e("Cmd:  ", "Sent NromalComd  X1=" + X1 + " Y1=" + Y1 + " X2=" + X2 + " Y2=" + Y2 + "  temp=" + nTestTemp);
 
 
         /*

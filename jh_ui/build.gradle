@@ -96,5 +96,7 @@ publishing {
 //1.22  修改是Android SDK35 编译
 //1.25  Fly添加修改wifi密码
 //1.26  so改为16K对齐
-//git commit -m "1.26" -a
+//1.28  修复飞机飞起来，第一次录像时，有可能飞机降落的问题，
+// （主要是原来发送命令在主线程，当第一次录像，会有大概几百个ms的delay，导致飞控认为失联而降落  2025-08-14
+//git commit -m "1.28" -a
 //git push -u origin main

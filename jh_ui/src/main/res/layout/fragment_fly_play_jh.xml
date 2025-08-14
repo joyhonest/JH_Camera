@@ -129,8 +129,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
         android:background="@mipmap/return_icon_fly_jh"/>
 
     <Button
@@ -343,7 +343,7 @@
         android:layout_centerInParent="true"
         android:elevation="100dp"
         android:id="@+id/View_ChangedPassword"
-        android:visibility="visible"
+        android:visibility="gone"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="400dp"

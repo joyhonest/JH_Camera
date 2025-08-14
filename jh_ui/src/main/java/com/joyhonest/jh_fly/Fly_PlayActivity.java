@@ -115,6 +115,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
 
 
 
+
+
     private Fragment mActiveFragment = null;
 
 
@@ -171,11 +173,15 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     //private Runnable   myRunnable;
 
 
+    public HandlerThread thread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JH_App.nAppType = 0;
         JH_App.nResolution = 0;
+        thread = new HandlerThread("SyMaTY_1");
+        thread.start(); //创建一个HandlerThread并启动它
         forceSendRequestByWifiData(true,this);
         //wifination.naSetRecordWH(640,480);
         wifination.naSetCmdResType(1);
@@ -228,6 +234,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         super.onResume();
 
     }
+
+
 
 
 
@@ -554,6 +562,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     protected void onDestroy() {
         super.onDestroy();
 
+        thread.quit();
         if (openHandler != null)
         {
             wifination.naStop();
@@ -930,13 +939,17 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "SwitchChanged")
     private void SwitchChanged(SwitchMesage b) {
         if (mActiveFragment == flyPlayFragment) {
-            if (b.mySwitch == flyPlayFragment.myswitch)
+            if (b.mySwitch == flyPlayFragment.myswitch) {
                 flyPlayFragment.F_SetPhoto(b.bLeft);
-            else {
-                if (b.bLeft) {
-                    flyPlayFragment.F_SetNoGsensor();
+            }
+            else
+            {
+                if(b.mySwitch == flyPlayFragment.button_leftRight) {
+                    if (b.bLeft) {
+                        flyPlayFragment.F_SetNoGsensor();
+                    }
+                    flyPlayFragment.F_SetMenuLeftRight(b.bLeft);
                 }
-                flyPlayFragment.F_SetMenuLeftRight(b.bLeft);
             }
         }
 
@@ -1671,9 +1684,9 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
                 flyPlayFragment.F_DispUI();
                 flyPlayFragment.F_DispSpeedIcon();
                 flyPlayFragment.F_DispGSensorIcon();
-
                 return;
             }
+            flyPlayFragment.F_QutThread();
             Exit2Spalsh(str);
             return;
         }
@@ -1932,7 +1945,6 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
     @Subscriber(tag = "btnRecordClick")
     private void onBtnRecordClick(String str)
     {
-        Log.e(TAG,"btnRecordClick! ");
         F_Check(1);
     }
     @Subscriber(tag ="btnBrowClicked")

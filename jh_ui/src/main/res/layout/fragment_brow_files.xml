@@ -124,8 +124,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="false"
                 android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
                 android:background="@mipmap/return_icon_black_fly_jh"/>
 
 
