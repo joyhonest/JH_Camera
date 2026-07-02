@@ -184,7 +184,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 */
 
         bGoFly = false;
-        wifination.appContext = getApplicationContext();
+        //wifination.appContext = getApplicationContext();
+        wifination.naSetContext(getApplicationContext());
         wifination.naSetVrBackground(false);
 
 

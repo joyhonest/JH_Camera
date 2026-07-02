@@ -47,7 +47,8 @@ public class FpvActivity extends AppCompatActivity implements View.OnClickListen
         DispImageView = findViewById(R.id.DispImageView);
         wifination.naSetRevBmp(true);
 
-        wifination.appContext = getApplicationContext();
+        //wifination.appContext = getApplicationContext();
+        wifination.naSetContext(getApplicationContext());
         wifination.naSetVrBackground(true);
         JH_App.F_InitMusic();
 

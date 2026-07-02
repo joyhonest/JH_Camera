@@ -41,7 +41,8 @@ public class droneActivity extends AppCompatActivity implements View.OnClickList
         JH_App.bIsSyMa=false;
         setContentView(R.layout.activity_drone);
         wifination.naSetRevBmp(true);
-        wifination.appContext = getApplicationContext();
+        //wifination.appContext = getApplicationContext();
+        wifination.naSetContext(getApplicationContext());
         wifination.naSetVrBackground(false);
         JH_App.F_InitMusic();
 

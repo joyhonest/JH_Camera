@@ -1934,6 +1934,7 @@ public class wifination {
 
 
 
+
     public static native void naSetRedChannel(int nRedCh);
     public static native void naSetGreenChannel(int nGreenCh);
     public static native void naSetBlueChannel(int nBlueCh);

@@ -182,7 +182,8 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
         forceSendRequestByWifiData(true,this);
         //wifination.naSetRecordWH(640,480);
         wifination.naSetCmdResType(1);
-        wifination.appContext = getApplicationContext();
+        //wifination.appContext = getApplicationContext();
+        wifination.naSetContext(getApplicationContext());
         wifination.naSetRecordAudio(JH_App.bRecordVoice);
         wifination.naSetVrBackground(true);
         JH_App.bFlyDisableAll = true;
