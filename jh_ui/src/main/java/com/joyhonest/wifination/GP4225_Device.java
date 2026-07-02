@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,6 +45,8 @@ public class GP4225_Device {
     public boolean bSD=false;
     public boolean bFastTcp = false;
     public boolean bNewOnlinePlay = false;
+    public boolean bh264OnlinePlay = false;  //海思的在线播放，表示支持RTSP播放
+    public boolean bSDNeedFormat = false;     //表示如果SD需要格式化（比如格式错误等。。。。）
     //public boolean bNewOnlinePlayByTcpH264 = false;
 
     //后来这个功能没有使用
@@ -59,7 +62,8 @@ public class GP4225_Device {
     public int PhotoCount;
 
     public long nSDAllSize;        //1024*1024 unit
-    public long nSDAvaildSize;
+    public long nSDAvailableSize;
+
 
     public int nBattery;
     public boolean bAdjfocus = false;
@@ -75,6 +79,9 @@ public class GP4225_Device {
     private int nXX_pre = 0;
     private int nYY_pre = 0;
     private int nZZ_pre = 0;
+
+
+    public  boolean bGetPrinterDensityLevels = false;
 
 
 
@@ -98,7 +105,7 @@ public class GP4225_Device {
         PhotoCount = 0;
         bSD = false;
         nSDAllSize = -1;
-        nSDAvaildSize = -1;
+        nSDAvailableSize = -1;
 
         bSDRecording = false;
         nMode = 0;
@@ -186,34 +193,36 @@ public class GP4225_Device {
 
         if (m_cmd == 0x0000 && s_cmd == 0x0001) {   //Device Status
             nMode = data[10] & 0xFF;
-            bSD = ((data[11] & 0x01) == 0); // 0 have SD  1 NoSD
+
+            bSD = ((data[11] & 0x01) == 0);          // 0 SD OK    1 No SD
             bSDRecording = ((data[11] & 0x02) != 0);
             bFastTcp = ((data[11] & 0x08) != 0);
             bNewOnlinePlay = ((data[11] & 0x10) != 0);
 
+            bh264OnlinePlay = ((data[11] & 0x40) != 0); //2025-07-09。 支持RTSP在线播放
+            bSDNeedFormat = ((data[11] & 0x80) != 0);
 
-            //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
-            //bNewOnlinePlayByTcpH264 = ((data[11] & 0x20) != 0);
 
             VideosCount = ((data[12] & 0xFF) + (data[13] & 0xFF) * 0x100 + (data[14] & 0xFF) * 0x10000 + (data[15] & 0xFF) * 0x1000000);
             LockedCount = ((data[16] & 0xFF) + (data[17] & 0xFF) * 0x100 + (data[18] & 0xFF) * 0x10000 + (data[19] & 0xFF) * 0x1000000);
             PhotoCount = ((data[20] & 0xFF) + (data[21] & 0xFF) * 0x100 + (data[22] & 0xFF) * 0x10000 + (data[23] & 0xFF) * 0x1000000);
 
-            if (n_len >= 0x36) {
+            if (data.length >= 36) {
                 nSDAllSize = ((data[24] & 0xFF) + (data[25] & 0xFF) * 0x100 + (data[26] & 0xFF) * 0x10000 + (data[27] & 0xFF) * 0x1000000L + (data[34] & 0xFF) * 0x100000000L);
-                nSDAvaildSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
+                nSDAvailableSize = ((data[28] & 0xFF) + (data[29] & 0xFF) * 0x100 + (data[30] & 0xFF) * 0x10000 + (data[31] & 0xFF) * 0x1000000L + (data[35] & 0xFF) * 0x100000000L);
             }
             if (data.length >= 34) {
                 nBattery = data[32] & 0xFF;
                 bAdjfocus = (data[33] != 0);
-
                 if (data.length >= 35) {
                     nFuncMask = data[34] & 0xFF;
                 }
-
-                if (data.length >= 40) {
+                if (data.length >= 40)
+                {
                     nSDRecordTime = (data[36] & 0xFF) + (data[37] & 0xFF) * 0x100 + (data[38] & 0xFF) * 0x10000 + (data[39] & 0xFF) * 0x1000000;
-                } else {
+                }
+                else
+                {
                     nSDRecordTime = -1;
                 }
                 if(data.length>=48)
@@ -222,7 +231,6 @@ public class GP4225_Device {
                     {
                         MacAddress[i]=data[40+i];
                     }
-
                     String strMac = String.format(Locale.ENGLISH,"%02X%02X%02X%02X%02X%02X",
                             MacAddress[0],MacAddress[1],MacAddress[2],MacAddress[3],MacAddress[4],MacAddress[5]);
                     String strIP = String.format(Locale.ENGLISH,"%d.%d.%d.%d",
@@ -230,7 +238,6 @@ public class GP4225_Device {
                     CameraInfo camera = new CameraInfo();
                     camera.sIp = strIP;
                     camera.sMac = strMac;
-
                     if(!strMac.equalsIgnoreCase("000000000000")) {
                         EventBus.getDefault().post(camera, "onFindCamera");
                         EventBus.getDefault().post(strMac,"onMacAddress");
@@ -270,39 +277,54 @@ public class GP4225_Device {
         }
         if (m_cmd == 0x0002)  //GetFileList
         {
-            if (s_cmd == 0x0001 || s_cmd == 0x0002 || s_cmd == 0x0003) {  //VideoList   LockFileList  //图片文件
+            if (s_cmd == 0x0001 || s_cmd == 0x0002 || s_cmd == 0x0003) {
+                //VideoList   LockFileList  //图片文件
                 nStartInx = (data[10] & 0xFF) + (data[11] & 0xFF) * 0x100;
                 nEndInx = (data[12] & 0xFF) + (data[13] & 0xFF) * 0x100;
-
-//                int ni = nEndInx - nStartInx+1;
-//                int nCLen = data.length-14;
-//
-//                int nC2 = nCLen/ni;  //
-//                int nC3 = 32+nC2-68;
 
                 int nC3 = 32;
                 int nC2 = 68;
 
                 byte[] buffer = new byte[nC3];
 
+
                 GetFiles FF = new GetFiles();
                 FF.files = new ArrayList<>();
+                int  nPaInx = 0;
+                String sPath = "";
                 for (int ii = 0; ii <= nEndInx - nStartInx; ii++) {
+                    int da = 0;
+                    sPath = "";
+                    nPaInx = (10+4)+(ii*nC2);
+                    for(int xx = 0;xx<24;xx++)
+                    {
+                        if (data[nPaInx + xx] != 0) {
+                            da++;
+                        }
+                    }
+
+                    if(da!=0 && da <=24)
+                    {
+                        System.arraycopy(data, nPaInx, buffer, 0, da);
+                        sPath = new String(buffer, 0, da);
+                    }
+
+
                     inx = 14 + 24+8 + (ii * nC2);
                     nLen = (data[inx] & 0xFF) + (data[inx + 1] & 0xFF) * 0x100 + (data[inx + 2] & 0xFF) * 0x10000 + (data[inx + 3] & 0xFF) * 0x1000000;
                     inx += 4;
-                    int da = 0;
+                    da = 0;
                     for (int xx = 0; xx < nC3; xx++) {
                         if (data[inx + xx] != 0) {
                             da++;
                         }
                     }
                     sFileName = "";
-                    if (da != 0 &da<=nC3) {
+                    if (da != 0 && da<=nC3) {
                         System.arraycopy(data, inx, buffer, 0, da);
                         sFileName = new String(buffer, 0, da);
                     }
-                    MyFile file = new MyFile("", sFileName, nLen);
+                    MyFile file = new MyFile(sPath, sFileName, nLen);
                     file.nInx1 = nStartInx;
                     file.nInx2 = nEndInx;
                     FF.files.add(file);
@@ -396,7 +418,7 @@ public class GP4225_Device {
             }
 
             switch (s_cmd) {
-                case 0x00001:          //delete a file
+                case 0x0001:          //delete a file
                     MyFile file = new MyFile("", sFileName, (int) nStatus);
                     EventBus.getDefault().post(file, "GP4225_DeleteFile");
                     break;
@@ -409,12 +431,10 @@ public class GP4225_Device {
         }
         if (m_cmd == 0x0021) {
             if (s_cmd == 0x0001) {   //透传数据
-                if (n_len != 0) {
-                    byte[] buffer = new byte[n_len];
-                    System.arraycopy(data, 10, buffer, 0, n_len);
-                    EventBus.getDefault().post(buffer, "GP4225_Get_Transfer_data");
-                    return true;
-                }
+                byte[] buffer = new byte[n_len];
+                System.arraycopy(data, 10, buffer, 0, n_len);
+                EventBus.getDefault().post(buffer, "GP4225_Get_Transfer_data");
+                return true;
             }
             return false;
         }
@@ -468,7 +488,7 @@ public class GP4225_Device {
                             EventBus.getDefault().post(str,"onGetWiFiSSID");
                         }
                         catch (Exception e) {
-                            //e.printStackTrace();
+                            //;
                             ;
                         }
 
@@ -504,18 +524,18 @@ public class GP4225_Device {
                 {
                     byte a = data[10];
                     Integer aa = (int) a;
-                 //   Log.e("Format", a + "");
-                    EventBus.getDefault().post(aa, "GP4225_FormatSD_Status");
+                    EventBus.getDefault().post(aa, "onGetFormatStatus");
                 }
                 break;
                 case 0x0009:  //Ver
                 {
-                    byte[] buffer = new byte[n_len];
-                    System.arraycopy(data, 10, buffer, 0, n_len);
-                    sVer = new String(buffer);
-
-                    EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
-                    EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
+                        byte[] buffer = new byte[n_len];
+                        System.arraycopy(data, 10, buffer, 0, n_len);
+                        sVer = new String(buffer);
+                        if(!sVer.isEmpty()) {
+                            EventBus.getDefault().post(sVer, "GP4225_GetFireWareVersion");
+                            EventBus.getDefault().post(sVer, "onGetFirmwareVersion");
+                        }
                 }
                 break;
                 case 0x000A: {
@@ -833,23 +853,64 @@ public class GP4225_Device {
                 }
                 break;
 
-                case 0x0030:
+                case 0x002F:   //SD卡是否支持循环录像（SDK满，就覆盖旧资料）
                 {
-                    if(n_len>=10) {
+                    byte a = data[10];
+                    Integer aa = (int)a;
+                    EventBus.getDefault().post(aa, "onGetSDLoopRecording");
+                }
+                break;
+
+
+                case  0x0030:           //wifi 打印。
+                {
+                    if (n_len >= 10) {
                         byte flag = data[10];
                         byte status = data[11];
-                        byte percentage =  data[12];
+                        byte percentage = data[12];
+                        byte nLevel = data[13];
 
-                        Integer nStatus1 = (int)status;
-                        EventBus.getDefault().post(nStatus1,"onPrinterStatus");
-                        if(status == 0)
+                        /*
+                        flag
+                        [Bit0] 0：Default，1：电量不足
+                        [Bit1] 0：Default，1：缺纸
+                        [Bit2] 0：Default，1：温度过高
+                        [Bit3] 0：Default，1：TCP 出错
+                        [Bit4] 0：Default，1：内存不足
+                        [Bit5] 0：Default，1：数据异常
+                        [Bit6] 0：Default，1：其它异常情况
+                        [Bit7] 0：Default，1：USB 充电
+
+                        status:
+                        0：异常或退出打印
+                        1：设备 OK
+                        2：开始打印
+                        3：打印完成
+                         */
+
+                        if(bGetPrinterDensityLevels)
                         {
-                            Integer errNo = (int) flag;
-                            EventBus.getDefault().post(errNo,"onPrinterStatusErrorNo");
+                            bGetPrinterDensityLevels = false;
+                            Integer nl =(int) nLevel;
+                            EventBus.getDefault().post(nl, "onGetPrinterDensityLevels");
+                        }
+                        else
+                        {
+                            Integer nStatus1 = (int) (status & 0xff);  //| ((nLevel << 8) & 0xff00) | (flag << 16) & 0xff0000;
+                            EventBus.getDefault().post(nStatus1, "onPrinterStatus");
+                            if(flag!=0)
+                            {
+                            //   if (status == 0)
+                                {
+                                    Integer errNo = (int) flag;
+                                    EventBus.getDefault().post(errNo, "onPrinterStatusErrorNo");
+                                }
+                            }
                         }
                     }
                 }
                 break;
+
 //                case 0x0031:
 //                {
 //                    byte []da = new byte[n_len];
@@ -898,27 +959,75 @@ public class GP4225_Device {
                 }
                 break;
 
-                case 0x0050:
+                case 0x0035:
                 {
-                    byte[] aa = null;
-                    if (n_len > 0) {
-                        aa = new byte[n_len];
+                    if(n_len==0x20)
+                    {
+                        byte[] aa = new byte[n_len];
                         System.arraycopy(data, 10, aa, 0, n_len);
-                        EventBus.getDefault().post(aa, "GP4225_GetDeviceInfo");
+                        EventBus.getDefault().post(aa, "onGetScreen_CTL");    //这个熄屏时间
                     }
                 }
                 break;
-                case 0x0055:  //TFT是否横竖屏显示。2025-0627 和凡昆讨论确定
+                case 0x0036:
+                {
+                    if(n_len==0x20)
+                    {
+                        byte[] aa = new byte[n_len];
+                        System.arraycopy(data, 10, aa, 0, n_len);
+                        EventBus.getDefault().post(aa, "onGetPowerOff_CTL");  //这个自动关机时间 是 x0055 的升级版。
+                    }
+                }
+                break;
+                case 0x0037:    //获取固件的图像旋转角度
+                {
+                    Integer b  = (int)data[10];
+                    EventBus.getDefault().post(b, "onGetFirmwareRotate");
+                }
+                break;
+                case 0x0038:
+                {
+                    Integer b  = (int)data[10];
+                    EventBus.getDefault().post(b, "onGetBeepAndVibration");
+                }
+                break;
+
+                case 0x0050:
+                {
+                    byte[] aa = null;
+                    aa = new byte[n_len];
+                    System.arraycopy(data, 10, aa, 0, n_len);
+                    EventBus.getDefault().post(aa, "GP4225_GetDeviceInfo");
+                }
+                break;
+
+                case 0x0054:  //屏幕保护时间
                 {
                     byte a = data[10];
-                    Integer aa = (int) a;  //0 横屏， 1 竖屏
-                    EventBus.getDefault().post(aa, "onGetTftOrientation");
+                    Integer aa = (int) a;  //屏幕保护0：关闭 1:1分钟 2:3分钟 3:5分钟 4:10分钟
+                    EventBus.getDefault().post(aa, "onGetScreenSaverTime");
+                }
+                break;
+
+                case 0x0055:  //自动关机
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;  //自动关机0：关闭 1:1分钟 2:3分钟 3:5分钟 4:10分钟
+                    EventBus.getDefault().post(aa, "onGetAutoOffTime");
+                }
+                break;
+                case 0x0056:        //设备播放声音大小
+                {
+                    byte a = data[10];
+                    Integer aa = (int) a;  // 0  -  100   0关闭  20 低  50 中  100 高
+                    EventBus.getDefault().post(aa, "onGetDevicePlayVolume");
                 }
                 break;
 
                 default:
                     bOK = false;
                     break;
+
             }
             return bOK;
         }
@@ -1086,7 +1195,7 @@ public class GP4225_Device {
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                ;
             }
         }
 
@@ -1126,7 +1235,7 @@ public class GP4225_Device {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            ;
         }
     }
 
@@ -1148,7 +1257,7 @@ public class GP4225_Device {
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                ;
             }
         }
     }
@@ -1164,15 +1273,19 @@ public class GP4225_Device {
 
 
     public static boolean bWifiPcm= true;
+    public static boolean bConvert = false;
     public static void WriteAudioData(byte[] data)
     {
-       // Log.e("tag","get pcm data");
         if(!bWifiPcm) {
             return;
         }
-        wifination.audioCodecExt.WriteData(data);
-        if(!b2Speaker)
+        if(bConvert)
             return;
+        wifination.audioCodecExt.WriteData(data);
+        if(!b2Speaker) {
+            Arrays.fill(data, (byte) 0);
+            return;
+        }
         if(audioTrack!=null)
         {
             try {
@@ -1180,7 +1293,7 @@ public class GP4225_Device {
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+                ;
             }
         }
     }

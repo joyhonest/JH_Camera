@@ -98,5 +98,7 @@ publishing {
 //1.26  so改为16K对齐
 //1.28  修复飞机飞起来，第一次录像时，有可能飞机降落的问题，
 // （主要是原来发送命令在主线程，当第一次录像，会有大概几百个ms的delay，导致飞控认为失联而降落  2025-08-14
-//git commit -m "1.28" -a
+
+//1.29  修复了EventBus 在高版本Android 可能会闪退的问题。
+//git commit -m "1.29" -a
 //git push -u origin main

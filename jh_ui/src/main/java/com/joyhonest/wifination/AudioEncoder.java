@@ -10,10 +10,6 @@ import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-//import androidx.core.app.ActivityCompat;
-
-//import androidx.core.app.ActivityCompat;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.WeakHashMap;
@@ -25,9 +21,9 @@ public class AudioEncoder implements AudioCodec {
 
     private float fVolAdj = 0.5f;
     private boolean bVolAdj = false;
-    public int nRecType = 0;
+    public int nRecType = 0;    //1 从外部， 2 直接压缩
     int KEY_CHANNEL_COUNT = 1;
-    int KEY_SAMPLE_RATE = 8000;
+    int KEY_SAMPLE_RATE = 16000;
 
     int CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;// (KEY_CHANNEL_COUNT ==1? AudioFormat.CHANNEL_IN_MONO:AudioFormat.CHANNEL_IN_STEREO);
     int BUFFFER_SIZE = 1024 * 2;
@@ -52,22 +48,18 @@ public class AudioEncoder implements AudioCodec {
         nRecType = 0;
     }
 
-    public void SetDataExt(boolean b) {
-        if (b) {
-            nRecType = 1;
-            KEY_CHANNEL_COUNT = 2;
-            CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
-            KEY_SAMPLE_RATE = 8000;
+    public void SetDataExt(int nType) {
+        if (nType!=0) {
+            nRecType = nType;
+            KEY_CHANNEL_COUNT = 1;//2;
+            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
+            KEY_SAMPLE_RATE = 16000;
 
         } else {
             nRecType = 0;
-//            KEY_CHANNEL_COUNT = 1;
-//            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
-//            KEY_SAMPLE_RATE = 44100;
-            KEY_CHANNEL_COUNT = 2;
-            CHANNEL_MODE = AudioFormat.CHANNEL_IN_STEREO;
-            KEY_SAMPLE_RATE = 8000;
-
+            KEY_CHANNEL_COUNT = 1;
+            CHANNEL_MODE = AudioFormat.CHANNEL_IN_MONO;
+            KEY_SAMPLE_RATE = 16000;
         }
 
     }
@@ -90,15 +82,15 @@ public class AudioEncoder implements AudioCodec {
             mWorker.setRunning(false);
             try {
                 mWorker.join(100);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
+
             }
             mWorker = null;
         }
         mWorker = new Worker();
         mWorker.nRecType = nRecType;
         boolean re = mWorker.prepare();
-        if (re) {
+        if (re && nRecType !=2) {
             mWorker.setRunning(true);
             mWorker.start();
         }
@@ -109,6 +101,14 @@ public class AudioEncoder implements AudioCodec {
         if (mWorker != null) {
             mWorker.setRunning(false);
             mWorker = null;
+        }
+    }
+
+    public void Encode(byte[]data ,long pts)
+    {
+        if(mWorker!=null)
+        {
+            mWorker.encode(data,pts);
         }
     }
 
@@ -135,30 +135,14 @@ public class AudioEncoder implements AudioCodec {
             while (isRunning) {
                 if (nRecType == 0) {
                     re = mRecord.read(mBuffer, 0, mFrameSize);
-
-                    encode(mBuffer);
-                } else {
+                    encode(mBuffer,-1);
+                }
+                else
+                {
                     byte[] bytes = wifination.audioCodecExt.ReadData(mFrameSize);
-                    if(bytes !=null) {
-                        if(bVolAdj) {
-                            short[] shorts = new short[mFrameSize / 2];
-                            for (int i = 0, j = 0; i < shorts.length; i++, j += 2) {
-                                shorts[i] = (short) ((bytes[j + 1] << 8) | (bytes[j + 0] & 0xFF));
-                                int da = (int) (shorts[i] * fVolAdj);
-                                if (da > 32767) {
-                                    da = 32767;
-                                }
-                                if (da < -32768)
-                                    da = -32768;
-                                shorts[i] = (short) da;
-                            }
-                            for (int i = 0; i < shorts.length; i++) {
-                                bytes[i * 2 + 1] = (byte) (shorts[i] >> 8);
-                                bytes[i * 2] = (byte) (shorts[i] & 0xFF);
-                            }
-                        }
-
-                        encode(bytes);
+                    if(bytes !=null)
+                    {
+                        encode(bytes,-1);
                     }
 
                 }
@@ -168,7 +152,8 @@ public class AudioEncoder implements AudioCodec {
 
         public void WriteExtData(byte[] data) {
             if (data != null) {
-                encode(data);
+                encode(data,-1);
+                Log.e("","Track 22222");
             }
         }
 
@@ -199,7 +184,6 @@ public class AudioEncoder implements AudioCodec {
             boolean re = false;
             try {
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT);
-
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
                 mRecord.startRecording();
                 mRecord.stop();
@@ -207,9 +191,9 @@ public class AudioEncoder implements AudioCodec {
                 mRecord = null;
                 re = true;
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
-                e.printStackTrace();
+
             }
 
             return re;
@@ -226,24 +210,25 @@ public class AudioEncoder implements AudioCodec {
             int a1 = 8;
             try {
                 MyMediaMuxer.nFramesAudio=0;
+                Log.e("","timeC reset Audio 2");
                 mBufferInfo = new MediaCodec.BufferInfo();
                 mEncoder = MediaCodec.createEncoderByType(MIME_TYPE);
                 mediaFormat = MediaFormat.createAudioFormat(MIME_TYPE, KEY_SAMPLE_RATE, KEY_CHANNEL_COUNT);
                 mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, KEY_BIT_RATE);
                 mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, KEY_AAC_PROFILE);
+                mediaFormat.setInteger(MediaFormat.KEY_PCM_ENCODING, AUDIO_FORMAT);
                 mEncoder.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
                 mEncoder.start();
                 re = true;
             } catch (Exception  e) {
-                e.printStackTrace();
                 mEncoder = null;
                 re =false;
             }
             if(nRecType!=0)     //如果是从外部灌数据，就无需mRecord;
             {
                 mFrameSize = 2048;
-                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2);
-                pts_unit = (long) (mFrameSize * 1000000L) / (KEY_SAMPLE_RATE * 2L);
+                MyMediaMuxer.nCt = (mFrameSize/2 * 1000000) / (KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT);
+                pts_unit = (mFrameSize/2 * 1000000L) /((long) KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT);
                 return re;
             }
             if(!re)
@@ -255,10 +240,9 @@ public class AudioEncoder implements AudioCodec {
 
                 int minBufferSize = AudioRecord.getMinBufferSize(KEY_SAMPLE_RATE, CHANNEL_MODE,AUDIO_FORMAT);
                 mRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, KEY_SAMPLE_RATE, CHANNEL_MODE, AUDIO_FORMAT, minBufferSize);
-                //int buffSize = Math.min(BUFFFER_SIZE, minBufferSize);
                 mFrameSize = 2048;
-                MyMediaMuxer.nCt = (mFrameSize * 1000000) / (KEY_SAMPLE_RATE * 2);
-                pts_unit = (long) (mFrameSize * 1000000L) / (KEY_SAMPLE_RATE * 2L);
+                MyMediaMuxer.nCt = (mFrameSize/2 * 1000000) / (KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT);
+                pts_unit =  (mFrameSize/2 * 1000000L) / (KEY_SAMPLE_RATE * KEY_CHANNEL_COUNT);
                 mBuffer = new byte[mFrameSize];
                 mRecord.startRecording();
                 re = true;
@@ -276,40 +260,62 @@ public class AudioEncoder implements AudioCodec {
 
 
 
+        long nPre = -1;
 
-        private void encode(byte[] data) {
+
+        public void encode(byte[] data,long nPts) {
+
             if(data==null)
                 return;
+            if(mEncoder==null)
+                return;
+
             long ppp = 0;
-
             int inputBufferId = mEncoder.dequeueInputBuffer(1000 * 50);
-            if (inputBufferId >= 0) {
-                ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
-                bb.put(data, 0, data.length);
-                ppp = pts*pts_unit;
-                pts++;
-                mEncoder.queueInputBuffer(inputBufferId, 0, data.length, ppp, 0);
-            }
+            if (inputBufferId >= 0)
+            {
 
+                if (nPts <0)
+                {
+                    ppp = pts * pts_unit;
+                } else {
+                    ppp = nPts;
+                }
+                pts++;
+                ByteBuffer bb = mEncoder.getInputBuffer(inputBufferId);// inputBuffers[inputBufferId];
+                if(bb!=null) {
+                    bb.put(data, 0, data.length);
+                    mEncoder.queueInputBuffer(inputBufferId, 0, data.length, ppp, 0);
+                }
+            }
             MediaCodec.BufferInfo aBufferInfo = new MediaCodec.BufferInfo();
             int outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
 
             if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 MediaFormat newFormat = mEncoder.getOutputFormat();
                 MyMediaMuxer.AddAudioTrack(newFormat);
-                Log.e(TAG,"add audio track");
+                outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
+                //return;
             }
 
-            if (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while
-                // outputBuffers[outputBufferId] is ready to be processed or rendered.
+            while (outputBufferIndex >= 0) {  //编码器有可能一次性突出多条数据 所以使用while
                 ByteBuffer bb =mEncoder.getOutputBuffer(outputBufferIndex);//  outputBuffers[outputBufferIndex];
                 bb.rewind();
                 byte[] dataA = new byte[aBufferInfo.size];
                 bb.get(dataA, 0, dataA.length);
-                MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
-                //Log.e("abcdefg","write a audio");
+                if (MyMediaMuxer.audioInx < 0)
+                {
+                    MediaFormat newFormat = mEncoder.getOutputFormat();
+                    MyMediaMuxer.AddAudioTrack(newFormat);
+                }
+
+
+                nPre = aBufferInfo.presentationTimeUs;
+                int re = MyMediaMuxer.WritSample(dataA,false,aBufferInfo);
                 mEncoder.releaseOutputBuffer(outputBufferIndex, false);
+                outputBufferIndex = mEncoder.dequeueOutputBuffer(aBufferInfo, 1000 * 10);
             }
+            //mEncoder.releaseOutputBuffer(outputBufferIndex, false);
         }
 
         /**

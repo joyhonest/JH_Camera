@@ -145,10 +145,7 @@ public class Fly_PlayActivity extends AppCompatActivity implements View.OnClickL
             SystemClock.sleep(20);
             wifination.naSentUdpData(JH_App.sIP,20000,data,7);
             SystemClock.sleep(20);
-
             bChangedPass = false;
-
-
 
             wifination.naGetAPP_Special_Function();
             SystemClock.sleep(20);

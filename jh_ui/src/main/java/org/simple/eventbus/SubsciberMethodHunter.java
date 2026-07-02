@@ -176,7 +176,11 @@ public class SubsciberMethodHunter {
     }
 
     private boolean isSystemCalss(String name) {
-        return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("android.");
+        return name.startsWith("java.")
+                || name.startsWith("javax.")
+                || name.startsWith("android.")
+                || name.startsWith("androidx.")
+                || name.startsWith("kotlin.");
     }
 
 }
